@@ -1,0 +1,16 @@
+WorldRacer possible API's, SDK's:
+
+- Google Maps API, 
+- easy to implement, no challenge to get the map 3d into Unity
+- Expensive, not feasible for a school project. 
+
+https://wiki.openstreetmap.org/wiki/Unity
+- Mapbox for Unity
+
+Mapbox.com!
+
+Using mapbox.com
+
+What is the game going to be:
+
+- 
