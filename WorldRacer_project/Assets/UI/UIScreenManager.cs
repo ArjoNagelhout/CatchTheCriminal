@@ -9,10 +9,13 @@ public class UIScreenManager : MonoBehaviour
     [System.NonSerialized]
     public UIManager uiManager;
 
-
     public void Animate(Vector2 position, Vector2 direction, float duration, bool destroyOnAnimationEnd)
     {
         // This function animates the screen from a certain position in a certain direction
+
+        // Make sure the user can't use buttons while the animation is playing
+        Deactivate();
+
 
         float width = rectTransform.rect.width;
         float height = rectTransform.rect.height;
@@ -38,12 +41,22 @@ public class UIScreenManager : MonoBehaviour
 
         if (destroyOnAnimationEnd)
         {
-            AnimationEvent destroyEvent = new AnimationEvent();
-            destroyEvent.time = duration;
-            destroyEvent.functionName = "SendDestroyScreen";
+            AnimationEvent destroyEvent = new AnimationEvent
+            {
+                time = duration,
+                functionName = "SendDestroyScreen"
+            };
 
             animationClip.AddEvent(destroyEvent);
         }
+
+        // Make sure the user will be able to use buttons when the animation is finished
+        AnimationEvent activateEvent = new AnimationEvent
+        {
+            time = duration,
+            functionName = "Activate"
+        };
+        animationClip.AddEvent(activateEvent);
 
         animationComponent.AddClip(animationClip, animationClip.name);
         animationComponent.Play(animationClip.name);
@@ -64,5 +77,25 @@ public class UIScreenManager : MonoBehaviour
     public void SendPreviousScreen(UIScreenManager previousScreen)
     {
         uiManager.PreviousScreen(previousScreen);
+    }
+
+    public void Activate()
+    {
+        Button[] buttons = GetComponentsInChildren<Button>();
+
+        foreach (Button button in buttons)
+        {
+            button.interactable = true;
+        }
+    }
+
+    public void Deactivate()
+    {
+        Button[] buttons = GetComponentsInChildren<Button>();
+
+        foreach (Button button in buttons)
+        {
+            button.interactable = false;
+        }
     }
 }
