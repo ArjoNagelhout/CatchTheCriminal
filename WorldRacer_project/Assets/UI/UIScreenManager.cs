@@ -9,12 +9,17 @@ public class UIScreenManager : MonoBehaviour
     [System.NonSerialized]
     public UIManager uiManager;
 
+    public void Awake()
+    {
+        uiManager = FindObjectOfType<UIManager>();
+    }
+
     public void Animate(Vector2 position, Vector2 direction, float duration, bool destroyOnAnimationEnd, bool activateCurrentScreenOnAnimationEnd)
     {
         // This function animates the screen from a certain position in a certain direction
 
         // Make sure the user can't use buttons while the animation is playing
-        //SendDeactivateScreen();
+        SendDeactivateScreen();
 
 
         float width = rectTransform.rect.width;
@@ -106,6 +111,11 @@ public class UIScreenManager : MonoBehaviour
 
 
     // Set button states
+    public void SendActivateCurrentScreen()
+    {
+        uiManager.ActivateCurrentScreen();
+    }
+
     public void SendActivateScreen()
     {
         uiManager.ActivateScreen(gameObject.GetComponent<UIScreenManager>());
@@ -114,10 +124,5 @@ public class UIScreenManager : MonoBehaviour
     public void SendDeactivateScreen()
     {
         uiManager.DeactivateScreen(gameObject.GetComponent<UIScreenManager>());
-    }
-
-    public void SendActivateCurrentScreen()
-    {
-        uiManager.ActivateCurrentScreen();
     }
 }

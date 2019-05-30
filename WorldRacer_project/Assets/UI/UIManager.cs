@@ -48,7 +48,6 @@ public class UIManager : MonoBehaviour
 
         UIScreenManager nextScreenInstance = Instantiate(nextScreen, transform);
         nextScreenInstance.Animate(-direction, direction, duration, false, false);
-        nextScreenInstance.uiManager = gameObject.GetComponent<UIManager>();
 
         currentScreen.Animate(Vector2.zero, direction, duration, true, false);
 
@@ -65,7 +64,6 @@ public class UIManager : MonoBehaviour
         }
 
         UIScreenManager screenInstance = Instantiate(screen, transform);
-        screenInstance.uiManager = gameObject.GetComponent<UIManager>();
 
         currentScreen = screenInstance;
     }
@@ -80,7 +78,6 @@ public class UIManager : MonoBehaviour
 
         UIScreenManager overlayScreenInstance = Instantiate(overlayScreen, transform);
         overlayScreenInstance.Animate(-direction, direction, duration, false, false);
-        overlayScreenInstance.uiManager = gameObject.GetComponent<UIManager>();
 
         currentOverlayScreen = overlayScreenInstance;
 
