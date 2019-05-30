@@ -6,12 +6,7 @@ public class UIScreenManager : MonoBehaviour
     public RectTransform rectTransform;
     public Animation animationComponent;
     public UIManager uiManager;
-    public Image image;
 
-    private void Start()
-    {
-        image.color = Random.ColorHSV();
-    }
 
     public void Animate(Vector2 position, Vector2 direction, float duration, bool destroyOnAnimationEnd)
     {
@@ -43,7 +38,7 @@ public class UIScreenManager : MonoBehaviour
         {
             AnimationEvent destroyEvent = new AnimationEvent();
             destroyEvent.time = duration;
-            destroyEvent.functionName = "DestroyScreen";
+            destroyEvent.functionName = "SendDestroyScreen";
 
             animationClip.AddEvent(destroyEvent);
         }
@@ -52,8 +47,20 @@ public class UIScreenManager : MonoBehaviour
         animationComponent.Play(animationClip.name);
     }
 
-    public void DestroyScreen()
+    // Communicate upwards to UIManager (sends messages)
+
+    public void SendDestroyScreen()
     {
         uiManager.DestroyScreen(gameObject.GetComponent<UIScreenManager>());
+    }
+
+    public void SendNextScreen(UIScreenManager nextScreen)
+    {
+        uiManager.NextScreen(nextScreen);
+    }
+
+    public void SendPreviousScreen(UIScreenManager previousScreen)
+    {
+        uiManager.PreviousScreen(previousScreen);
     }
 }

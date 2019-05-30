@@ -5,27 +5,28 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    public UIScreenManager currentScreen;
+    public UIScreenManager startScreen;
 
-    public UIScreenManager nextScreen;
+    private UIScreenManager currentScreen;
 
-    private Vector2 directionNext = new Vector2(-1, 0);
-    private Vector2 directionPrevious = new Vector2(1, 0);
+    private float duration = 0.5f;
 
-    // Start is called before the first frame update
     void Start()
     {
-        
+        InitializeScreen(startScreen);
     }
 
-    // Update is called once per frame
-    void Update()
+    // Quicker notations
+    public void NextScreen(UIScreenManager nextScreen)
     {
-        if (Input.GetKeyDown("space"))
-        {
-            SwitchScreen(nextScreen, directionNext, 0.5f);
-        }
+        SwitchScreen(nextScreen, new Vector2(-1, 0), duration);
     }
+
+    public void PreviousScreen(UIScreenManager previousScreen)
+    {
+        SwitchScreen(previousScreen, new Vector2(1, 0), duration);
+    }
+
 
     public void SwitchScreen(UIScreenManager nextScreen, Vector2 direction, float duration)
     {
@@ -41,8 +42,32 @@ public class UIManager : MonoBehaviour
         currentScreen = nextScreenInstance;
     }
 
+    public void InitializeScreen(UIScreenManager screen)
+    {
+        // Delete all screens
+        UIScreenManager[] previousScreens = FindObjectsOfType<UIScreenManager>();
+        foreach (UIScreenManager previousScreen in previousScreens)
+        {
+            Destroy(previousScreen.gameObject);
+        }
+
+        UIScreenManager screenInstance = Instantiate(screen, transform);
+        screenInstance.uiManager = gameObject.GetComponent<UIManager>();
+
+        currentScreen = screenInstance;
+    }
+
+
+    public void OverlayScreen(UIScreenManager overlayScreen, Vector2 direction, float duration)
+    {
+        // Creates a new screen, animates this into the view on top of the existing screen
+    }
+
+
     public void DestroyScreen(UIScreenManager toDestroyScreen)
     {
         Destroy(toDestroyScreen.gameObject);
     }
+
+
 }
