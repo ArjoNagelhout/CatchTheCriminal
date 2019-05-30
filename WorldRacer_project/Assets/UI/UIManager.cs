@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
 
     private UIScreenManager currentScreen;
 
-    private float duration = 0.5f;
+    public float duration = 1f;
 
     void Start()
     {

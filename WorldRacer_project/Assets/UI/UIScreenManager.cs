@@ -5,6 +5,8 @@ public class UIScreenManager : MonoBehaviour
 {
     public RectTransform rectTransform;
     public Animation animationComponent;
+
+    [System.NonSerialized]
     public UIManager uiManager;
 
 
