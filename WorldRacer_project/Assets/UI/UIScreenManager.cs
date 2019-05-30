@@ -9,12 +9,12 @@ public class UIScreenManager : MonoBehaviour
     [System.NonSerialized]
     public UIManager uiManager;
 
-    public void Animate(Vector2 position, Vector2 direction, float duration, bool destroyOnAnimationEnd)
+    public void Animate(Vector2 position, Vector2 direction, float duration, bool destroyOnAnimationEnd, bool activateCurrentScreenOnAnimationEnd)
     {
         // This function animates the screen from a certain position in a certain direction
 
         // Make sure the user can't use buttons while the animation is playing
-        Deactivate();
+        //SendDeactivateScreen();
 
 
         float width = rectTransform.rect.width;
@@ -31,7 +31,7 @@ public class UIScreenManager : MonoBehaviour
 
         Keyframe[] keysY = new Keyframe[2];
         keysY[0] = new Keyframe(0.0f, position.y * height, 0.0f, 0.0f);
-        keysY[1] = new Keyframe(duration, (position.y + direction.y * height), 0.0f, 0.0f);
+        keysY[1] = new Keyframe(duration, (position.y + direction.y) * height, 0.0f, 0.0f);
 
         AnimationCurve animationCurveX = new AnimationCurve(keysX);
         AnimationCurve animationCurveY = new AnimationCurve(keysY);
@@ -50,11 +50,22 @@ public class UIScreenManager : MonoBehaviour
             animationClip.AddEvent(destroyEvent);
         }
 
+        if (activateCurrentScreenOnAnimationEnd)
+        {
+            AnimationEvent activateCurrentScreenEvent = new AnimationEvent
+            {
+                time = duration,
+                functionName = "SendActivateCurrentScreen"
+            };
+
+            animationClip.AddEvent(activateCurrentScreenEvent);
+        }
+
         // Make sure the user will be able to use buttons when the animation is finished
         AnimationEvent activateEvent = new AnimationEvent
         {
             time = duration,
-            functionName = "Activate"
+            functionName = "SendActivateScreen"
         };
         animationClip.AddEvent(activateEvent);
 
@@ -69,33 +80,44 @@ public class UIScreenManager : MonoBehaviour
         uiManager.DestroyScreen(gameObject.GetComponent<UIScreenManager>());
     }
 
+
     public void SendNextScreen(UIScreenManager nextScreen)
     {
         uiManager.NextScreen(nextScreen);
     }
+
 
     public void SendPreviousScreen(UIScreenManager previousScreen)
     {
         uiManager.PreviousScreen(previousScreen);
     }
 
-    public void Activate()
-    {
-        Button[] buttons = GetComponentsInChildren<Button>();
 
-        foreach (Button button in buttons)
-        {
-            button.interactable = true;
-        }
+    public void SendDismissBottomOverlay()
+    {
+        uiManager.DismissBottomOverlay();
     }
 
-    public void Deactivate()
-    {
-        Button[] buttons = GetComponentsInChildren<Button>();
 
-        foreach (Button button in buttons)
-        {
-            button.interactable = false;
-        }
+    public void SendPresentBottomOverlay(UIScreenManager overlayScreen)
+    {
+        uiManager.PresentBottomOverlay(overlayScreen);
+    }
+
+
+    // Set button states
+    public void SendActivateScreen()
+    {
+        uiManager.ActivateScreen(gameObject.GetComponent<UIScreenManager>());
+    }
+
+    public void SendDeactivateScreen()
+    {
+        uiManager.DeactivateScreen(gameObject.GetComponent<UIScreenManager>());
+    }
+
+    public void SendActivateCurrentScreen()
+    {
+        uiManager.ActivateCurrentScreen();
     }
 }
