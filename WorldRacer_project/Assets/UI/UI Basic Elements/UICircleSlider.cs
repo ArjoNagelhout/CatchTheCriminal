@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -13,7 +14,7 @@ public class UICircleSlider : MonoBehaviour, IDragHandler, IPointerDownHandler
     public float minValue;
     public float maxValue;
 
-    public float currentvalue;
+    public float currentValue;
 
     private float bandSize;
 
@@ -22,6 +23,10 @@ public class UICircleSlider : MonoBehaviour, IDragHandler, IPointerDownHandler
 
     private int previousQuadrant;
 
+    public UnityEvent onValueChange = new UnityEvent();
+
+
+
     public void Awake()
     {
         bandSize = foregroundRect.offsetMin.x;
@@ -29,7 +34,7 @@ public class UICircleSlider : MonoBehaviour, IDragHandler, IPointerDownHandler
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
         sliderRadius = rectTransform.rect.height / 2 - bandSize / 2;
 
-        float initialAngle = (currentvalue / (maxValue - minValue)) * 360;
+        float initialAngle = (currentValue / (maxValue - minValue)) * 360;
         previousQuadrant = (int)initialAngle / 90;
 
         UpdateValue(new Vector2(transform.position.x, transform.position.y)+AngleToVector2(initialAngle));
@@ -79,6 +84,11 @@ public class UICircleSlider : MonoBehaviour, IDragHandler, IPointerDownHandler
         fillImage.fillAmount = fillAmount;
 
         handleRect.localPosition = AngleToVector2(angle) * sliderRadius;
+
+        // Update currentValue
+        currentValue = (maxValue - minValue) * (angle / 360) + minValue;
+
+        onValueChange.Invoke();
     }
 
     Vector2 AngleToVector2(float angle)
