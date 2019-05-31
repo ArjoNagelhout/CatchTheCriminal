@@ -8,24 +8,31 @@ public class UICircleSlider : MonoBehaviour, IDragHandler, IPointerDownHandler
 {
     public Image fillImage;
     public RectTransform handleRect;
+    public RectTransform foregroundRect;
 
     public float minValue;
     public float maxValue;
 
     public float currentvalue;
 
-    private float sliderRadius;
+    private float bandSize;
+
+    [System.NonSerialized]
+    public float sliderRadius;
 
     private int previousQuadrant;
 
     public void Awake()
     {
+        bandSize = foregroundRect.offsetMin.x;
+
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-        sliderRadius = rectTransform.rect.height / 2;
+        sliderRadius = rectTransform.rect.height / 2 - bandSize / 2;
 
         float initialAngle = (currentvalue / (maxValue - minValue)) * 360;
         previousQuadrant = (int)initialAngle / 90;
-        UpdateValue(AngleToVector2(initialAngle));
+
+        UpdateValue(new Vector2(transform.position.x, transform.position.y)+AngleToVector2(initialAngle));
     }
 
     public void OnDrag(PointerEventData eventData)
