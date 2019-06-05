@@ -63,7 +63,7 @@ public class UICircleSlider : MonoBehaviour, IDragHandler, IPointerDownHandler
         angle = (-angle + 450) % 360;
 
         int currentQuadrant = (int)angle / 90;
-        if (Mathf.Abs(previousQuadrant - currentQuadrant) == 3) {
+        if (Mathf.Abs(previousQuadrant - currentQuadrant) >= 2) {
             if (previousQuadrant == 0)
             {
                 angle = 0;
