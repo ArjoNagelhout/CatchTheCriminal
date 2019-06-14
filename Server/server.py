@@ -103,6 +103,8 @@ Room structure
 def handle_json(json_data):
 	print(json_data)
 	try:
+		if json_data['action'] == 'test_connection':
+			return {'answer': 'Dit is een test'}
 		if json_data['action'] == 'create_room':
 			
 			time = json_data['time']

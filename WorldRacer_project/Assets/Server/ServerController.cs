@@ -26,8 +26,6 @@ public class ServerController : MonoBehaviour
         }
 
 
-
-
         StartCoroutine(Communicate());
     }
 
@@ -48,7 +46,11 @@ public class ServerController : MonoBehaviour
             }
             else
             {
-                Debug.Log("Success");
+                byte[] answer = webRequest.downloadHandler.data;
+                string answerString = System.Text.Encoding.UTF8.GetString(answer);
+
+                JSONObject json = new JSONObject(answerString);
+                Debug.Log(json.GetField("answer"));
             }
         }
     }
