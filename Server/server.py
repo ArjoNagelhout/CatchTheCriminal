@@ -14,8 +14,9 @@ class GameState(Enum):
 	playing = 2
 
 class PlayerType(Enum):
-	criminal = 0
-	cop = 1
+	tobedetermined = 0
+	criminal = 1
+	cop = 2
 
 rooms = []
 
@@ -63,7 +64,7 @@ def create_room():
 
 	playfield = Playfield([])
 
-	room = Room(time, playfield, Player('0', 'Arjo', None))
+	room = Room(time, playfield, Player('0', 'Arjo', PlayerType.tobedetermined))
 	rooms.append(room)
 
 
@@ -101,30 +102,38 @@ Room structure
 
 
 def handle_json(json_data):
-	print(json_data)
-	try:
-		if json_data['action'] == 'test_connection':
-			return {'answer': 'Dit is een test'}
-		if json_data['action'] == 'create_room':
-			
-			time = json_data['time']
-			playfield = json_data['playfield']
+	#print(json_data)
+	#try:
+	if json_data['action'] == 'test_connection':
+		return {'answer': 'Dit is een test'}
+	if json_data['action'] == 'create_game':
 
-			host = Player(json_data['ip'], json_data['name'], None)
+		print("Create game")
 
-			new_room = Room(time, playfield, host)
+		time = json_data['time']
 
-			print(new_room)
+		pointsRaw = json_data['playfield']
+		points = []
+		for point in pointsRaw:
+			points.append(Point(point['longitude'], point['latitude']))
 
-			return {'status': 'success', 'room_pin': new_room.pin}
+		playfield = Playfield(points)
 
-		elif json_data['action'] == 'join_room':
-			# json_data['room_pin']
-			pass
-		
-	except KeyError:
+		host = Player(json_data['ip'], json_data['name'], PlayerType.tobedetermined)
+
+		new_room = Room(time, playfield, host)
+
+		print("New room created: "+new_room)
+
+		return {'status': 'success', 'room_pin': new_room.pin}
+
+	elif json_data['action'] == 'join_room':
+		# json_data['room_pin']
 		pass
-	return {'status': 'failed', 'message': 'Something went wrong. '}
+		
+	#except KeyError:
+#		pass
+#	return {'status': 'failed', 'message': 'Something went wrong. '}
 
 class RequestHandler(BaseHTTPRequestHandler):
 
@@ -134,7 +143,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 	def do_POST(self):
 		print("HTTP POST")
 		data_string = self.rfile.read(int(self.headers['Content-Length']))
-		print(data_string)
+		#print(data_string)
 		json_data = json.loads(data_string.decode())
 		self.send_response(200)
 		self.send_header('Content-type', 'application/json')

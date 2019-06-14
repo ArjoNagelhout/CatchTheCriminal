@@ -223,8 +223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b65a33aacfc44e2b81aea60bcd8d43d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverAddress: 172.20.10.12:8000
-  json_data: '{     "action": "test_connection" }'
+  serverAddress: 192.168.2.43:8000
 --- !u!4 &1586264061
 Transform:
   m_ObjectHideFlags: 0

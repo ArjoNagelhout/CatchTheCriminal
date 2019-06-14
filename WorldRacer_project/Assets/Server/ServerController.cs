@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+[System.Serializable]
+public class Playfield
+{
+    public List<Vector2> points;
+}
+
 public class ServerController : MonoBehaviour
 {
     public string serverAddress;
 
     private string uri;
-
-    public string json_data;
 
 
     void Start()
@@ -25,13 +29,51 @@ public class ServerController : MonoBehaviour
             uri = string.Format("http://{0}", serverAddress);
         }
 
+        Playfield playfield = new Playfield
+        {
+            points = new List<Vector2>()
+        };
 
-        StartCoroutine(Communicate());
+        for (int i = 0; i < 10; i++)
+        {
+            playfield.points.Add(new Vector2(i, i));
+        }
+        
+
+        CreateGame(100, playfield);
+        //StartCoroutine(Communicate());
     }
 
-    IEnumerator Communicate()
+    public void CreateGame(int time, Playfield playfield)
     {
-        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(json_data);
+        JSONObject sendObject = new JSONObject();
+        sendObject.AddField("action", "create_game");
+        sendObject.AddField("time", time);
+
+        JSONObject playfieldObject = new JSONObject();
+
+        List<Vector2> points = playfield.points;
+        foreach (Vector2 point in points)
+        {
+            JSONObject pointObject = new JSONObject();
+            pointObject.AddField("longitude", point.x);
+            pointObject.AddField("latitude", point.y);
+
+            playfieldObject.Add(pointObject);
+        }
+        sendObject.AddField("playfield", playfieldObject);
+
+        sendObject.AddField("ip", "123.456.12.34");
+        sendObject.AddField("name", "Arjo");
+
+        Debug.Log(sendObject);
+
+        StartCoroutine(Communicate(sendObject.ToString()));
+    }
+
+    IEnumerator Communicate(string jsonString)
+    {
+        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(jsonString);
 
         using (UnityWebRequest webRequest = UnityWebRequest.Put(uri, bytes))
         {
