@@ -5,9 +5,42 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+enum Playertype { Tobedetermined, Criminal, Cop };
+
 public class Playfield
 {
     public List<Vector2> points = new List<Vector2>();
+
+    public Playfield(JSONObject playfieldJson)
+    {
+        foreach (JSONObject pointJson in playfieldJson)
+        {
+            float longitude = pointJson.GetField("longitude").f;
+            float latitude = pointJson.GetField("latitude").f;
+
+            Vector2 newPoint = new Vector2(longitude, latitude);
+
+            points.Add(newPoint);
+        }
+    }
+
+    public Playfield()
+    {
+
+    }
+}
+
+public class Player
+{
+    public string ip;
+    public string name;
+}
+
+public class Game
+{
+    public int time;
+    public Playfield playfield;
+    public List<Player> players;
 }
 
 public class ServerController : MonoBehaviour
@@ -27,9 +60,12 @@ public class ServerController : MonoBehaviour
     public UIScreenManager uiScreenRoomPlayer;
     public UIScreenManager uiScreenHome;
 
+    public Game game;
+
 
     void Start()
     {
+
         string prefix = "http://";
 
         if (serverAddress.StartsWith(prefix, System.StringComparison.Ordinal))
@@ -73,7 +109,7 @@ public class ServerController : MonoBehaviour
         isHost = true;
 
         string status = incomingJson.GetField("status").str;
-
+        
         if (status == "success")
         {
             Debug.Log("Room created");
@@ -84,6 +120,15 @@ public class ServerController : MonoBehaviour
             Debug.Log("Room not created");
             uiManager.ShowPopup("Couldn't create game.", uiManager.popupDuration);
         }
+
+        // Create game object with right variables
+
+        game = new Game()
+        {
+            time = (int)incomingJson.GetField("time").i,
+            playfield = new Playfield(incomingJson.GetField("playfield"))
+
+        };
     }
 
 
@@ -109,6 +154,13 @@ public class ServerController : MonoBehaviour
             isHost = false;
 
             uiManager.NextScreen(uiScreenRoomPlayer);
+
+            game = new Game()
+            {
+                time = (int)incomingJson.GetField("time").i,
+                playfield = new Playfield(incomingJson.GetField("playfield"))
+
+            };
         }
         else if (status == "failed")
         {

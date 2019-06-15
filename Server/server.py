@@ -130,8 +130,9 @@ def handle_json(json_data):
 		rooms[new_room.pin] = new_room
 
 		debug.log("New room created: "+str(new_room))
+		
 
-		return {'status': 'success', 'room_pin': new_room.pin}
+		return {'status': 'success', 'room_pin': new_room.pin, 'time': time, 'playfield': pointsRaw}
 
 	elif json_data['action'] == 'join_game':
 
@@ -145,7 +146,14 @@ def handle_json(json_data):
 			rooms[room_pin].playerlist.append(player)
 
 			debug.log(str(rooms[room_pin]))
-			return {'status': 'success', 'room_pin': room_pin}
+
+			time = rooms[room_pin].time
+			points = rooms[room_pin].playfield.points
+			pointsRaw = []
+			for point in points:
+				pointsRaw.append({'longitude': point.longitude, 'latitude': point.latitude})
+
+			return {'status': 'success', 'room_pin': room_pin, 'time': time, 'playfield': pointsRaw}
 		else:
 			return {'status': 'failed'}
 	elif json_data['action'] == 'leave_game':
