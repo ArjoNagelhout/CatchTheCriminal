@@ -6,6 +6,8 @@ import socket
 import time
 import datetime
 
+rooms = {}
+
 
 # Debug class for easy logging with timestamps
 class Debug():
@@ -35,22 +37,33 @@ class PlayerType(Enum):
 	criminal = 1
 	cop = 2
 
-rooms = []
-
 class Point(object):
 	def __init__(self, longitude, latitude):
 		self.longitude = longitude
 		self.latitude = latitude
 
+	def __str__(self):
+		return "long: "+str(self.longitude)+", lat: "+str(self.latitude)
+
 class Playfield(object):
 	def __init__(self, points: List[Point]):
 		self.points = points # List of points that define the playfield
+	
+	def __str__(self):
+		string = ""
+		for point in self.points:
+			string += "    ("+str(point)+")\n"
+		return string
+		
 
 class Player(object):
 	def __init__(self, ip: str, name: str, playertype: PlayerType):
 		self.ip = ip
 		self.name = name
 		self.playertype = playertype
+
+	def __str__(self):
+		return "ip: "+self.ip+", name: "+self.name+", playertype: "+str(self.playertype)
 
 class Room(object):
 	def __init__(self, time: int, playfield: Playfield, host: Player):
@@ -61,7 +74,13 @@ class Room(object):
 		self.pin = '000000'
 
 	def __str__(self):
-		return "object of \"Room\" class"
+		string = "\n[Room #"+self.pin+"]\n  Time:\n    "+str(self.time)+"\n  Players: \n"
+		
+		for player in self.playerlist:
+			string += "    ("+str(player)+")\n"
+
+		string += "  Playfield: \n"+str(self.playfield)
+		return string
 
 
 	def addPlayer(self):
@@ -71,54 +90,8 @@ class Room(object):
 		pass
 
 
-
-
-
-
-def create_room():
-
-	time = 10*60
-
-	playfield = Playfield([])
-
-	room = Room(time, playfield, Player('0', 'Arjo', PlayerType.tobedetermined))
-	rooms.append(room)
-
-
-'''
-Room structure
-
-[
-	[
-		id (string), 
-		state (bool), 
-		time (int)
-		time_left (int), 
-		map_points (array) [
-			(longitude (float), latitude (float),
-			...
-		],
-		start_point (longitude (float), latitude (float)),
-		players (array) [
-			player (array) [
-				[criminal (bool), longitude (float), latitude (float)
-			]
-		]
-	]
-]
-{
-	'action': 'create_room',
-	'time': 120,
-	'playfield': 'test',
-	'ip': '0.0.0.0',
-	'name': 'Arjo'
-}
-
-{'action': 'create_room', 'time': 120, 'playfield': 'test', 'ip': '0.0.0.0', 'name': 'Arjo'}
-'''
-
-
 def handle_json(json_data):
+	global rooms
 	#print(json_data)
 	#try:
 	if json_data['action'] == 'test_connection':
@@ -140,13 +113,28 @@ def handle_json(json_data):
 
 		new_room = Room(time, playfield, host)
 
+		rooms[new_room.pin] = new_room
+
 		debug.log("New room created: "+str(new_room))
 
 		return {'status': 'success', 'room_pin': new_room.pin}
 
-	elif json_data['action'] == 'join_room':
-		# json_data['room_pin']
-		pass
+	elif json_data['action'] == 'join_game':
+
+		debug.log("Join game")
+
+		player = Player(json_data['ip'], json_data['name'], PlayerType.tobedetermined)
+
+		room_pin = json_data['room_pin']
+
+		if room_pin in rooms:
+			rooms[room_pin].playerlist.append(player)
+
+			debug.log(str(rooms[room_pin]))
+			return {'status': 'success'}
+		else:
+			return {'status': 'failed'}
+		
 		
 	#except KeyError:
 #		pass

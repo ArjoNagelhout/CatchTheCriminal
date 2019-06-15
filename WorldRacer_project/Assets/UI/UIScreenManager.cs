@@ -8,10 +8,13 @@ public class UIScreenManager : MonoBehaviour
 
     [System.NonSerialized]
     public UIManager uiManager;
+    [System.NonSerialized]
+    public ServerController serverController;
 
     public void Awake()
     {
         uiManager = FindObjectOfType<UIManager>();
+        serverController = FindObjectOfType<ServerController>();
     }
 
     public void Animate(Vector2 position, Vector2 direction, float duration, bool destroyOnAnimationEnd, bool activateCurrentScreenOnAnimationEnd)
@@ -124,5 +127,25 @@ public class UIScreenManager : MonoBehaviour
     public void SendDeactivateScreen()
     {
         uiManager.DeactivateScreen(gameObject.GetComponent<UIScreenManager>());
+    }
+
+    // Communicate upwards to ServerController (sends messages)
+    public void CreateGame()
+    {
+        int time = FindObjectOfType<SetTimeSliderManager>().currentTime;
+
+        Playfield playfield = new Playfield();
+
+        for (int i = 0; i < 10; i++)
+        {
+            playfield.points.Add(new Vector2(i, i));
+        }
+
+        serverController.CreateGame(time, playfield);
+    }
+
+    public void JoinGame(Text roomPin)
+    {
+        serverController.JoinGame(roomPin.text);
     }
 }

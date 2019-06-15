@@ -1,0 +1,39 @@
+Room structure
+
+[
+	[
+		id (string), 
+		state (bool), 
+		time (int)
+		time_left (int), 
+		map_points (array) [
+			(longitude (float), latitude (float),
+			...
+		],
+		start_point (longitude (float), latitude (float)),
+		players (array) [
+			player (array) [
+				[criminal (bool), longitude (float), latitude (float)
+			]
+		]
+	]
+]
+{
+	'action': 'create_room',
+	'time': 120,
+	'playfield': 'test',
+	'ip': '0.0.0.0',
+	'name': 'Arjo'
+}
+
+{'action': 'create_room', 'time': 120, 'playfield': 'test', 'ip': '0.0.0.0', 'name': 'Arjo'}
+
+
+A room is a dictionary:
+
+{
+    "012345": Room(),
+    "384923": Room(),
+    "384293": Room(),
+    "192384": Room()
+}

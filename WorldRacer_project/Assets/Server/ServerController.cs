@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 [System.Serializable]
 public class Playfield
 {
-    public List<Vector2> points;
+    public List<Vector2> points = new List<Vector2>();
 }
 
 public class ServerController : MonoBehaviour
@@ -17,12 +17,15 @@ public class ServerController : MonoBehaviour
     private string uri;
 
 
+    public string roomPin;
+
+
     void Start()
     {
-        //StartCoroutine(Upload());
         string prefix = "http://";
 
-        if (serverAddress.StartsWith(prefix, System.StringComparison.Ordinal)) {
+        if (serverAddress.StartsWith(prefix, System.StringComparison.Ordinal))
+        {
             uri = serverAddress;
         }
         else
@@ -30,19 +33,7 @@ public class ServerController : MonoBehaviour
             uri = string.Format("http://{0}", serverAddress);
         }
 
-        Playfield playfield = new Playfield
-        {
-            points = new List<Vector2>()
-        };
 
-        for (int i = 0; i < 10; i++)
-        {
-            playfield.points.Add(new Vector2(i, i));
-        }
-        
-
-        CreateGame(100, playfield);
-        //StartCoroutine(Communicate());
     }
 
     public void CreateGame(int time, Playfield playfield)
@@ -67,18 +58,44 @@ public class ServerController : MonoBehaviour
         sendObject.AddField("ip", "123.456.12.34");
         sendObject.AddField("name", "Arjo");
 
-        Debug.Log(sendObject);
-
         StartCoroutine(SendRequest(sendObject, CreateGameCallback));
     }
 
     private void CreateGameCallback(JSONObject incomingJson)
     {
-        Debug.Log(incomingJson);
+        roomPin = incomingJson.GetField("room_pin").ToString();
+        Debug.Log(roomPin);
     }
+
+
+    public void JoinGame(string roomPin)
+    {
+        JSONObject sendObject = new JSONObject();
+        sendObject.AddField("action", "join_game");
+        sendObject.AddField("room_pin", roomPin);
+
+        sendObject.AddField("ip", "123.456.33.22");
+        sendObject.AddField("name", "Jaco");
+
+        StartCoroutine(SendRequest(sendObject, JoinGameCallback));
+    }
+
+    private void JoinGameCallback(JSONObject incomingJson)
+    {
+        string status = incomingJson.GetField("status").ToString();
+        if (status == "success")
+        {
+            Debug.Log("Room found");
+        } else if (status == "failed") {
+            Debug.Log("Room not found");
+        }
+    }
+
 
     IEnumerator SendRequest(JSONObject outgoingJson, Action<JSONObject> callback = null)
     {
+        Debug.Log(outgoingJson);
+
         string jsonString = outgoingJson.ToString();
         byte[] bytes = System.Text.Encoding.UTF8.GetBytes(jsonString);
 
@@ -99,7 +116,7 @@ public class ServerController : MonoBehaviour
                 string answerString = System.Text.Encoding.UTF8.GetString(answer);
 
                 JSONObject incomingJson = new JSONObject(answerString);
-
+                Debug.Log(incomingJson);
                 callback?.Invoke(incomingJson);
 
             }
