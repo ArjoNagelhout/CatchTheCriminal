@@ -17,8 +17,12 @@ public class NameInputField : MonoBehaviour
         path = Application.dataPath + "/playername.txt";
         if (File.Exists(path))
         {
-            inputField.text = File.ReadAllText(path);
+            string playerName = File.ReadAllText(path);
+            inputField.text = playerName;
+
+            uiScreenManager.SetName(playerName);
         }
+
     }
 
     public void SetName()

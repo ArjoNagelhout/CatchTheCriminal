@@ -21,6 +21,8 @@ public class ServerController : MonoBehaviour
     [System.NonSerialized]
     public string playerName;
 
+    public UIManager uiManager;
+
 
     void Start()
     {
@@ -84,12 +86,16 @@ public class ServerController : MonoBehaviour
 
     private void JoinGameCallback(JSONObject incomingJson)
     {
-        string status = incomingJson.GetField("status").ToString();
+        string status = incomingJson.GetField("status").str;
+
         if (status == "success")
         {
             Debug.Log("Room found");
-        } else if (status == "failed") {
+        }
+        else if (status == "failed")
+        {
             Debug.Log("Room not found");
+            uiManager.ShowPopup("Room not found", uiManager.popupDuration);
         }
     }
 

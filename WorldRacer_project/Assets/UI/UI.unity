@@ -226,6 +226,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startScreen: {fileID: 1212336397812283709, guid: 78c0ffd7152c74fe8b4964799e7ff5b3,
     type: 3}
+  uiPopupObject: {fileID: 4390704022559896269, guid: fb92c8b017b214183961e74cd3f024b4,
+    type: 3}
   duration: 0.3
 --- !u!1 &844437726
 GameObject:
@@ -323,7 +325,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverAddress: 192.168.2.43:8000
-  roomPin: 
+  uiManager: {fileID: 808048620}
 --- !u!4 &901691774
 Transform:
   m_ObjectHideFlags: 0

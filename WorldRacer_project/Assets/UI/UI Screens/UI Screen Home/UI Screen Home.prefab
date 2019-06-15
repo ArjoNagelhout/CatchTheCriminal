@@ -325,7 +325,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiScreenManager: {fileID: 1212336397812283709}
   inputField: {fileID: 1733902674971556538}
-  playerNameFile: {fileID: 4900000, guid: 53ddce36f86e74e08bdd7b8954fedb60, type: 3}
 --- !u!1001 &2777874681854345637
 PrefabInstance:
   m_ObjectHideFlags: 0

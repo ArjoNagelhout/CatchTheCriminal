@@ -11,7 +11,10 @@ public class UIManager : MonoBehaviour
     private UIScreenManager currentScreen;
     private UIScreenManager currentOverlayScreen;
 
+    public GameObject uiPopupObject;
+
     public float duration = 1f;
+    public int popupDuration = 2;
 
     void Start()
     {
@@ -127,5 +130,13 @@ public class UIManager : MonoBehaviour
         {
             button.interactable = false;
         }
+    }
+
+    public void ShowPopup(string displayString, int displayTime)
+    {
+        GameObject uiPopupInstance = Instantiate(uiPopupObject, gameObject.transform);
+        UIPopup uiPopup = uiPopupInstance.GetComponent<UIPopup>();
+        uiPopup.displayString = displayString;
+        uiPopup.displayTime = displayTime;
     }
 }

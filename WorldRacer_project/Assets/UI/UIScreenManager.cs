@@ -13,6 +13,8 @@ public class UIScreenManager : MonoBehaviour
 
     
 
+    
+
     public void Awake()
     {
         uiManager = FindObjectOfType<UIManager>();
@@ -129,6 +131,12 @@ public class UIScreenManager : MonoBehaviour
     public void SendDeactivateScreen()
     {
         uiManager.DeactivateScreen(gameObject.GetComponent<UIScreenManager>());
+    }
+
+    // Present message / popup
+    public void ShowPopup(string displayString, int displayTime)
+    {
+        uiManager.ShowPopup(displayString, displayTime);
     }
 
     // Communicate upwards to ServerController (sends messages)
