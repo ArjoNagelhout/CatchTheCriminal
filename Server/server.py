@@ -134,7 +134,36 @@ def handle_json(json_data):
 			return {'status': 'success'}
 		else:
 			return {'status': 'failed'}
+	elif json_data['action'] == 'leave_game':
+
+		debug.log("Leave game")
+
+		room_pin = json_data['room_pin']
+
 		
+
+		if len(rooms[room_pin].playerlist) > 1:
+			# This means that the player can be removed
+
+			playerlist = rooms[room_pin].playerlist
+			for i, player in enumerate(playerlist):
+				debug.log(player.ip)
+				debug.log(json_data['ip'])
+				if player.ip == json_data['ip'] and player.name == json_data['name']:
+					
+					del playerlist[i]
+
+					debug.log(str(rooms[room_pin]))
+					return {'status': 'success'}
+
+			
+		else:
+			# This means the room needs to be removed
+			del rooms[room_pin]
+			debug.log("Room #"+str(room_pin)+" deleted")
+			return {'status': 'success'}
+			
+		return {'status': 'failed'}
 		
 	#except KeyError:
 #		pass

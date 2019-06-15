@@ -229,6 +229,7 @@ MonoBehaviour:
   uiPopupObject: {fileID: 4390704022559896269, guid: fb92c8b017b214183961e74cd3f024b4,
     type: 3}
   duration: 0.3
+  popupDuration: 2
 --- !u!1 &844437726
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,6 +327,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverAddress: 192.168.2.43:8000
   uiManager: {fileID: 808048620}
+  uiScreenRoomPlayer: {fileID: 3380994802068860978, guid: 906f44f9535514d3b9d144b8bd926ee7,
+    type: 3}
+  uiScreenHome: {fileID: 1212336397812283709, guid: 78c0ffd7152c74fe8b4964799e7ff5b3,
+    type: 3}
 --- !u!4 &901691774
 Transform:
   m_ObjectHideFlags: 0

@@ -151,7 +151,7 @@ public class UIScreenManager : MonoBehaviour
 
         Playfield playfield = new Playfield();
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 3; i++)
         {
             playfield.points.Add(new Vector2(i, i));
         }
@@ -162,5 +162,10 @@ public class UIScreenManager : MonoBehaviour
     public void JoinGame(Text roomPin)
     {
         serverController.JoinGame(roomPin.text);
+    }
+
+    public void LeaveGame()
+    {
+        serverController.LeaveGame();
     }
 }

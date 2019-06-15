@@ -55,6 +55,11 @@ public class UIManager : MonoBehaviour
         currentScreen.Animate(Vector2.zero, direction, duration, true, false);
 
         currentScreen = nextScreenInstance;
+
+        if (currentOverlayScreen != null)
+        {
+            currentOverlayScreen.Animate(Vector2.zero, direction, duration, true, false);
+        }
     }
 
     public void InitializeScreen(UIScreenManager screen)

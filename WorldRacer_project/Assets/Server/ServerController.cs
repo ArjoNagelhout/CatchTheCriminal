@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-[System.Serializable]
 public class Playfield
 {
     public List<Vector2> points = new List<Vector2>();
@@ -23,6 +22,9 @@ public class ServerController : MonoBehaviour
 
     public UIManager uiManager;
 
+    public UIScreenManager uiScreenRoomPlayer;
+    public UIScreenManager uiScreenHome;
+
 
     void Start()
     {
@@ -36,8 +38,6 @@ public class ServerController : MonoBehaviour
         {
             uri = string.Format("http://{0}", serverAddress);
         }
-
-
     }
 
     public void CreateGame(int time, Playfield playfield)
@@ -67,7 +67,7 @@ public class ServerController : MonoBehaviour
 
     private void CreateGameCallback(JSONObject incomingJson)
     {
-        roomPin = incomingJson.GetField("room_pin").ToString();
+        roomPin = incomingJson.GetField("room_pin").str;
         Debug.Log(roomPin);
     }
 
@@ -91,11 +91,44 @@ public class ServerController : MonoBehaviour
         if (status == "success")
         {
             Debug.Log("Room found");
+            //uiManager.DismissBottomOverlay();
+            uiManager.NextScreen(uiScreenRoomPlayer);
         }
         else if (status == "failed")
         {
             Debug.Log("Room not found");
             uiManager.ShowPopup("Room not found", uiManager.popupDuration);
+        }
+    }
+
+
+    public void LeaveGame()
+    {
+        JSONObject sendObject = new JSONObject();
+        sendObject.AddField("action", "leave_game");
+
+        sendObject.AddField("room_pin", roomPin);
+
+        sendObject.AddField("ip", "123.456.33.22");
+        sendObject.AddField("name", playerName);
+
+        
+
+
+        StartCoroutine(SendRequest(sendObject, LeaveGameCallback));
+    }
+
+    private void LeaveGameCallback(JSONObject incomingJson)
+    {
+        string status = incomingJson.GetField("status").str;
+
+        if (status == "success")
+        {
+            Debug.Log("Left game");
+            uiManager.PreviousScreen(uiScreenHome);
+        } else if (status == "failed")
+        {
+            Debug.Log("Failed to leave game");
         }
     }
 
