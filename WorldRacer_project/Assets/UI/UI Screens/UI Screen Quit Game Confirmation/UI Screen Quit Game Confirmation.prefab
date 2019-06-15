@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 772382732460787485}
   - component: {fileID: 7308444793706343214}
   - component: {fileID: 2839977571206241042}
+  - component: {fileID: 6675308552424438488}
   m_Layer: 5
-  m_Name: Text (1)
+  m_Name: Quit Message
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59,7 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -79,6 +80,22 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "You will be able to rejoin while the game hasn\u2019t started yet. "
+--- !u!114 &6675308552424438488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543678276929068901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 027eda2c5c50f4278969576f66d87a80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: {fileID: 2839977571206241042}
+  ifHost: "Someone else will become host, but you will be able to rejoin while the
+    game hasn\u2019t started yet."
+  ifNotHost: "You will be able to rejoin while the game hasn\u2019t started yet."
 --- !u!1 &1453457028546353559
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,7 +229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

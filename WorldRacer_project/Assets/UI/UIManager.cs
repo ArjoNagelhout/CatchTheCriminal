@@ -8,8 +8,9 @@ public class UIManager : MonoBehaviour
 {
     public UIScreenManager startScreen;
 
-    private UIScreenManager currentScreen;
-    private UIScreenManager currentOverlayScreen;
+    [System.NonSerialized]
+    public UIScreenManager currentScreen;
+    public UIScreenManager currentOverlayScreen;
 
     public GameObject uiPopupObject;
 

@@ -161,10 +161,10 @@ MonoBehaviour:
   m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 2
+  m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
-  m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ScaleFactor: 3
+  m_ReferenceResolution: {x: 1334, y: 750}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -226,6 +226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startScreen: {fileID: 1212336397812283709, guid: 78c0ffd7152c74fe8b4964799e7ff5b3,
     type: 3}
+  currentOverlayScreen: {fileID: 0}
   uiPopupObject: {fileID: 4390704022559896269, guid: fb92c8b017b214183961e74cd3f024b4,
     type: 3}
   duration: 0.3

@@ -61,7 +61,6 @@ public class ServerController : MonoBehaviour
         }
         sendObject.AddField("playfield", playfieldObject);
 
-        //sendObject.AddField("ip", "123.456.12.34");
         sendObject.AddField("name", playerName);
 
         StartCoroutine(SendRequest(sendObject, CreateGameCallback));
@@ -70,6 +69,8 @@ public class ServerController : MonoBehaviour
     private void CreateGameCallback(JSONObject incomingJson)
     {
         roomPin = incomingJson.GetField("room_pin").str;
+
+        isHost = true;
 
         string status = incomingJson.GetField("status").str;
 
@@ -92,7 +93,6 @@ public class ServerController : MonoBehaviour
         sendObject.AddField("action", "join_game");
         sendObject.AddField("room_pin", newRoomPin);
 
-        //sendObject.AddField("ip", "123.456.33.22");
         sendObject.AddField("name", playerName);
 
         StartCoroutine(SendRequest(sendObject, JoinGameCallback));
@@ -106,7 +106,8 @@ public class ServerController : MonoBehaviour
         {
             Debug.Log("Room found");
             roomPin = incomingJson.GetField("room_pin").str;
-            //uiManager.DismissBottomOverlay();
+            isHost = false;
+
             uiManager.NextScreen(uiScreenRoomPlayer);
         }
         else if (status == "failed")
@@ -124,7 +125,6 @@ public class ServerController : MonoBehaviour
 
         sendObject.AddField("room_pin", roomPin);
 
-        //sendObject.AddField("ip", "123.456.33.22");
         sendObject.AddField("name", playerName);
 
         
@@ -150,6 +150,13 @@ public class ServerController : MonoBehaviour
 
     IEnumerator SendRequest(JSONObject outgoingJson, Action<JSONObject> callback = null)
     {
+        uiManager.DeactivateScreen(uiManager.currentScreen);
+
+        if (uiManager.currentOverlayScreen != null)
+        {
+            uiManager.DeactivateScreen(uiManager.currentOverlayScreen);
+        }
+
         Debug.Log(outgoingJson);
 
         string jsonString = outgoingJson.ToString();
@@ -174,6 +181,12 @@ public class ServerController : MonoBehaviour
                 JSONObject incomingJson = new JSONObject(answerString);
                 Debug.Log(incomingJson);
                 callback?.Invoke(incomingJson);
+
+                uiManager.ActivateScreen(uiManager.currentScreen);
+                if (uiManager.currentOverlayScreen != null)
+                {
+                    uiManager.ActivateScreen(uiManager.currentOverlayScreen);
+                }
 
             }
         }
