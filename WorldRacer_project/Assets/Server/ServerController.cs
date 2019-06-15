@@ -61,7 +61,7 @@ public class ServerController : MonoBehaviour
         }
         sendObject.AddField("playfield", playfieldObject);
 
-        sendObject.AddField("ip", "123.456.12.34");
+        //sendObject.AddField("ip", "123.456.12.34");
         sendObject.AddField("name", playerName);
 
         StartCoroutine(SendRequest(sendObject, CreateGameCallback));
@@ -86,13 +86,13 @@ public class ServerController : MonoBehaviour
     }
 
 
-    public void JoinGame(string roomPin)
+    public void JoinGame(string newRoomPin)
     {
         JSONObject sendObject = new JSONObject();
         sendObject.AddField("action", "join_game");
-        sendObject.AddField("room_pin", roomPin);
+        sendObject.AddField("room_pin", newRoomPin);
 
-        sendObject.AddField("ip", "123.456.33.22");
+        //sendObject.AddField("ip", "123.456.33.22");
         sendObject.AddField("name", playerName);
 
         StartCoroutine(SendRequest(sendObject, JoinGameCallback));
@@ -105,6 +105,7 @@ public class ServerController : MonoBehaviour
         if (status == "success")
         {
             Debug.Log("Room found");
+            roomPin = incomingJson.GetField("room_pin").str;
             //uiManager.DismissBottomOverlay();
             uiManager.NextScreen(uiScreenRoomPlayer);
         }
@@ -123,7 +124,7 @@ public class ServerController : MonoBehaviour
 
         sendObject.AddField("room_pin", roomPin);
 
-        sendObject.AddField("ip", "123.456.33.22");
+        //sendObject.AddField("ip", "123.456.33.22");
         sendObject.AddField("name", playerName);
 
         

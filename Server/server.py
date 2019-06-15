@@ -16,16 +16,26 @@ class Debug():
 		self.console_output = console_output
 		self.file_output = file_output
 
-	def log(self, string: str):
+	def log(self, string: str, paragraph: bool = False, important: bool = False):
 		ts = time.time()
 		st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 		if self.console_output:
-			print("["+st+"] "+string)
+			if paragraph:
+				print("")
+			new_string = string
+			if important:
+				new_string = "\033[92m"+string+"\033[00m"
+            
+			print("\033[91m["+st+"]\033[00m "+new_string)
+			if paragraph:
+				print("")
+			
+
 debug = Debug(console_output = True, file_output = False)
 
 HOST = socket.gethostbyname(socket.gethostname())
 PORT = 8000
-debug.log('SERVER HOSTED ON: ' + HOST + ':' + str(PORT))
+debug.log('SERVER HOSTED ON: ' + HOST + ':' + str(PORT), False, False)
 
 
 class GameState(Enum):
@@ -80,10 +90,9 @@ class Room(object):
 		while (new_pin == None or new_pin in rooms):
 			
 			new_pin = ""
-			for i in range(length):
+			for _ in range(length):
 				number = random.randint(0, 9)
 				new_pin += str(number)
-		debug.log(new_pin)
 		return new_pin
 
 
@@ -101,11 +110,9 @@ def handle_json(json_data):
 	global rooms
 	#print(json_data)
 	#try:
-	if json_data['action'] == 'test_connection':
-		return {'answer': 'Dit is een test'}
 	if json_data['action'] == 'create_game':
 
-		debug.log("Create game")
+		debug.log("Create game", important = True)
 
 		time = json_data['time']
 
@@ -128,7 +135,7 @@ def handle_json(json_data):
 
 	elif json_data['action'] == 'join_game':
 
-		debug.log("Join game")
+		debug.log("Join game", important=True)
 
 		player = Player(json_data['ip'], json_data['name'], PlayerType.tobedetermined)
 
@@ -138,17 +145,16 @@ def handle_json(json_data):
 			rooms[room_pin].playerlist.append(player)
 
 			debug.log(str(rooms[room_pin]))
-			return {'status': 'success'}
+			return {'status': 'success', 'room_pin': room_pin}
 		else:
 			return {'status': 'failed'}
 	elif json_data['action'] == 'leave_game':
 
-		debug.log("Leave game")
+		debug.log("Leave game", important=True)
 
 		room_pin = json_data['room_pin']
 
 		length = len(rooms[room_pin].playerlist)
-		debug.log(str(length))
 
 		if length > 1:
 			# This means that the player can be removed
@@ -179,18 +185,17 @@ def handle_json(json_data):
 
 class RequestHandler(BaseHTTPRequestHandler):
 
-	def do_GET(self):
-		debug.log("HTTP GET")
-
 	def do_POST(self):
-		debug.log("HTTP POST")
 		data_string = self.rfile.read(int(self.headers['Content-Length']))
-		#print(data_string)
 		json_data = json.loads(data_string.decode())
+		json_data.update({'ip': self.client_address[0]})
+		debug.log("Incoming json_data: "+str(json_data), True)
 		self.send_response(200)
 		self.send_header('Content-type', 'application/json')
 		self.end_headers()
-		self.wfile.write(json.dumps(handle_json(json_data)).encode())
+		outgoing_json_data = json.dumps(handle_json(json_data)).encode()
+		debug.log("Outgoing json_data: "+str(outgoing_json_data), True)
+		self.wfile.write(outgoing_json_data)
 
 	def log_message(self, format, *args):
 		pass
