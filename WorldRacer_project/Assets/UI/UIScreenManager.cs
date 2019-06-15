@@ -11,6 +11,8 @@ public class UIScreenManager : MonoBehaviour
     [System.NonSerialized]
     public ServerController serverController;
 
+    
+
     public void Awake()
     {
         uiManager = FindObjectOfType<UIManager>();
@@ -130,6 +132,11 @@ public class UIScreenManager : MonoBehaviour
     }
 
     // Communicate upwards to ServerController (sends messages)
+    public void SetName(string playerName)
+    {
+        serverController.playerName = playerName;
+    }
+
     public void CreateGame()
     {
         int time = FindObjectOfType<SetTimeSliderManager>().currentTime;

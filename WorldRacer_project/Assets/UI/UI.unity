@@ -322,9 +322,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b65a33aacfc44e2b81aea60bcd8d43d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverAddress: 10.3.20.148:8000
-  json_data: '{''action'': ''create_room'', ''time'': 120, ''playfield'': ''test'',
-    ''ip'': ''0.0.0.0'', ''name'': ''Arjo''}'
+  serverAddress: 192.168.2.43:8000
+  roomPin: 
 --- !u!4 &901691774
 Transform:
   m_ObjectHideFlags: 0

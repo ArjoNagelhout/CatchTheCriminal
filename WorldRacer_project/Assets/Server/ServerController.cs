@@ -16,8 +16,10 @@ public class ServerController : MonoBehaviour
     public string serverAddress;
     private string uri;
 
-
+    [System.NonSerialized]
     public string roomPin;
+    [System.NonSerialized]
+    public string playerName;
 
 
     void Start()
@@ -56,7 +58,7 @@ public class ServerController : MonoBehaviour
         sendObject.AddField("playfield", playfieldObject);
 
         sendObject.AddField("ip", "123.456.12.34");
-        sendObject.AddField("name", "Arjo");
+        sendObject.AddField("name", playerName);
 
         StartCoroutine(SendRequest(sendObject, CreateGameCallback));
     }
@@ -75,7 +77,7 @@ public class ServerController : MonoBehaviour
         sendObject.AddField("room_pin", roomPin);
 
         sendObject.AddField("ip", "123.456.33.22");
-        sendObject.AddField("name", "Jaco");
+        sendObject.AddField("name", playerName);
 
         StartCoroutine(SendRequest(sendObject, JoinGameCallback));
     }
