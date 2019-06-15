@@ -3,10 +3,27 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from enum import Enum
 import socket
+import time
+import datetime
+
+
+# Debug class for easy logging with timestamps
+class Debug():
+	def __init__(self, console_output, file_output):
+		self.console_output = console_output
+		self.file_output = file_output
+
+	def log(self, string: str):
+		ts = time.time()
+		st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+		if self.console_output:
+			print("["+st+"] "+string)
+debug = Debug(console_output = True, file_output = False)
 
 HOST = socket.gethostbyname(socket.gethostname())
 PORT = 8000
-print('SERVER HOSTED ON: ' + HOST + ':' + str(PORT))
+debug.log('SERVER HOSTED ON: ' + HOST + ':' + str(PORT))
+
 
 class GameState(Enum):
 	lobby = 0
@@ -108,7 +125,7 @@ def handle_json(json_data):
 		return {'answer': 'Dit is een test'}
 	if json_data['action'] == 'create_game':
 
-		print("Create game")
+		debug.log("Create game")
 
 		time = json_data['time']
 
@@ -123,7 +140,7 @@ def handle_json(json_data):
 
 		new_room = Room(time, playfield, host)
 
-		print("New room created: "+new_room)
+		debug.log("New room created: "+str(new_room))
 
 		return {'status': 'success', 'room_pin': new_room.pin}
 
@@ -138,10 +155,10 @@ def handle_json(json_data):
 class RequestHandler(BaseHTTPRequestHandler):
 
 	def do_GET(self):
-		print("HTTP GET")
+		debug.log("HTTP GET")
 
 	def do_POST(self):
-		print("HTTP POST")
+		debug.log("HTTP POST")
 		data_string = self.rfile.read(int(self.headers['Content-Length']))
 		#print(data_string)
 		json_data = json.loads(data_string.decode())

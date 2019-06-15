@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -12,7 +14,6 @@ public class Playfield
 public class ServerController : MonoBehaviour
 {
     public string serverAddress;
-
     private string uri;
 
 
@@ -68,11 +69,17 @@ public class ServerController : MonoBehaviour
 
         Debug.Log(sendObject);
 
-        StartCoroutine(Communicate(sendObject.ToString()));
+        StartCoroutine(SendRequest(sendObject, CreateGameCallback));
     }
 
-    IEnumerator Communicate(string jsonString)
+    private void CreateGameCallback(JSONObject incomingJson)
     {
+        Debug.Log(incomingJson);
+    }
+
+    IEnumerator SendRequest(JSONObject outgoingJson, Action<JSONObject> callback = null)
+    {
+        string jsonString = outgoingJson.ToString();
         byte[] bytes = System.Text.Encoding.UTF8.GetBytes(jsonString);
 
         using (UnityWebRequest webRequest = UnityWebRequest.Put(uri, bytes))
@@ -91,8 +98,10 @@ public class ServerController : MonoBehaviour
                 byte[] answer = webRequest.downloadHandler.data;
                 string answerString = System.Text.Encoding.UTF8.GetString(answer);
 
-                JSONObject json = new JSONObject(answerString);
-                Debug.Log(json.GetField("answer"));
+                JSONObject incomingJson = new JSONObject(answerString);
+
+                callback?.Invoke(incomingJson);
+
             }
         }
     }
