@@ -19,6 +19,8 @@ public class ServerController : MonoBehaviour
     public string roomPin;
     [System.NonSerialized]
     public string playerName;
+    [System.NonSerialized]
+    public bool isHost;
 
     public UIManager uiManager;
 
@@ -68,7 +70,19 @@ public class ServerController : MonoBehaviour
     private void CreateGameCallback(JSONObject incomingJson)
     {
         roomPin = incomingJson.GetField("room_pin").str;
-        Debug.Log(roomPin);
+
+        string status = incomingJson.GetField("status").str;
+
+        if (status == "success")
+        {
+            Debug.Log("Room created");
+            uiManager.NextScreen(uiScreenRoomPlayer);
+
+        } else if (status == "failed")
+        {
+            Debug.Log("Room not created");
+            uiManager.ShowPopup("Couldn't create game.", uiManager.popupDuration);
+        }
     }
 
 

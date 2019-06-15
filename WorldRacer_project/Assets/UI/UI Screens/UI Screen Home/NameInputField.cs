@@ -14,7 +14,7 @@ public class NameInputField : MonoBehaviour
 
     void Start()
     {
-        path = Application.dataPath + "/playername.txt";
+        path = Application.persistentDataPath + "/settings.json";
         if (File.Exists(path))
         {
             string playerName = File.ReadAllText(path);

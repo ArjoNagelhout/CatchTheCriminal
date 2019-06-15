@@ -5,6 +5,7 @@ from enum import Enum
 import socket
 import time
 import datetime
+import random
 
 rooms = {}
 
@@ -71,7 +72,20 @@ class Room(object):
 		self.playfield = playfield
 		self.playerlist = [host]
 
-		self.pin = '000000'
+		self.pin = self.generate_pin()
+	
+	def generate_pin(self):
+		length = 6
+		new_pin = None
+		while (new_pin == None or new_pin in rooms):
+			
+			new_pin = ""
+			for i in range(length):
+				number = random.randint(0, 9)
+				new_pin += str(number)
+		debug.log(new_pin)
+		return new_pin
+
 
 	def __str__(self):
 		string = "\n[Room #"+self.pin+"]\n  Time:\n    "+str(self.time)+"\n  Players: \n"
@@ -81,13 +95,6 @@ class Room(object):
 
 		string += "  Playfield: \n"+str(self.playfield)
 		return string
-
-
-	def addPlayer(self):
-		pass
-
-	def kickPlayer(self):
-		pass
 
 
 def handle_json(json_data):
@@ -140,9 +147,10 @@ def handle_json(json_data):
 
 		room_pin = json_data['room_pin']
 
-		
+		length = len(rooms[room_pin].playerlist)
+		debug.log(str(length))
 
-		if len(rooms[room_pin].playerlist) > 1:
+		if length > 1:
 			# This means that the player can be removed
 
 			playerlist = rooms[room_pin].playerlist

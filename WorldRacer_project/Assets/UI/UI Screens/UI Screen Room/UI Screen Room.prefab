@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &5829764622159136727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2770197391151573987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 914c93aabcc8f4d35933d0cf8348888e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: {fileID: 6425053690371012309}
 --- !u!1001 &1243964848746688496
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -280,10 +293,28 @@ PrefabInstance:
     - target: {fileID: 7932758268553586714, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
       propertyPath: m_Text
-      value: 'Room #??????'
+      value: 'Room #'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6fdf7994b8caa40cf9df2a1a1f56e949, type: 3}
+--- !u!1 &2770197391151573987 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1246659329084372268, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
+    type: 3}
+  m_PrefabInstance: {fileID: 3980251710404533967}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6425053690371012309 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7932758268553586714, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
+    type: 3}
+  m_PrefabInstance: {fileID: 3980251710404533967}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2770197391151573987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4625300616260613719
 PrefabInstance:
   m_ObjectHideFlags: 0
