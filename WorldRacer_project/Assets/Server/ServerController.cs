@@ -243,6 +243,7 @@ public class ServerController : MonoBehaviour
         sendObject.AddField("action", "leave_game");
         sendObject.AddField("room_pin", roomPin);
         sendObject.AddField("name", GetField("name"));
+        sendObject.AddField("is_host", isHost);
 
         StartCoroutine(SendRequest(sendObject, true, LeaveGameCallback));
     }
@@ -341,6 +342,11 @@ public class ServerController : MonoBehaviour
                 if (newPlayer.name == playerName && newPlayer.ip == playerIp)
                 {
                     kicked = false;
+
+                    if (newPlayer.isHost)
+                    {
+                        isHost = true;
+                    }
                 }
                 game.players.Add(newPlayer);
             }

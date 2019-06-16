@@ -195,6 +195,7 @@ def handle_json(json_data):
 				if player.ip == json_data['ip'] and player.name == json_data['name']:
 					
 					del playerlist[i]
+					playerlist[0].is_host = True
 
 					debug.log(str(rooms[room_pin]))
 					return {'status': 'success'}
