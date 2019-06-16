@@ -42,7 +42,7 @@ public class Player
 
 public class Game
 {
-    public bool started;
+    public bool starting;
     public int time;
     public Playfield playfield;
     public List<Player> players;
@@ -74,6 +74,8 @@ public class ServerController : MonoBehaviour
     public UnityEvent updateRoomData = new UnityEvent();
     private readonly float updateRoomDataDelay = 5f;
     private bool continueUpdatingRoomData;
+
+    private readonly float startGameDelay = 6f;
 
 
     public void UpdateFields(JSONObject fieldsJson)
@@ -280,7 +282,7 @@ public class ServerController : MonoBehaviour
         {
             time = (int)incomingJson.GetField("time").i,
             playfield = new Playfield(incomingJson.GetField("playfield")),
-            started = false,
+            starting = false,
             players = new List<Player>()
         };
 
@@ -307,11 +309,13 @@ public class ServerController : MonoBehaviour
         StartCoroutine(SendRequest(sendObject, false, UpdateRoomDataCallback));
     }
 
+
     public void StartUpdatingRoomData()
     {
         continueUpdatingRoomData = true;
         StartCoroutine(CycleUpdateRoomData());
     }
+
 
     public void StopUpdatingRoomData()
     {
@@ -359,6 +363,13 @@ public class ServerController : MonoBehaviour
                 uiManager.PreviousScreen(uiScreenHome);
             }
 
+            if (incomingJson.GetField("starting").b == true)
+            {
+                float delay = incomingJson.GetField("delay").f;
+                Debug.Log("Time before start: " + delay.ToString());
+                uiManager.ShowPopup(string.Format("Game will start in {0} seconds", delay), uiManager.popupDuration);
+            }
+
             updateRoomData.Invoke();
 
         }
@@ -382,6 +393,35 @@ public class ServerController : MonoBehaviour
         }
     }
 
+
+    public void RequestStartGame()
+    {
+        JSONObject sendObject = new JSONObject();
+        sendObject.AddField("action", "request_start_game");
+        sendObject.AddField("room_pin", roomPin);
+        sendObject.AddField("delay", startGameDelay);
+
+        StartCoroutine(SendRequest(sendObject, false, RequestStartGameCallback));
+    }
+
+
+    private void RequestStartGameCallback(JSONObject incomingJson)
+    {
+        string status = incomingJson.GetField("status").str;
+
+        if (status == "success")
+        {
+            uiManager.ShowPopup(string.Format("Game will start in {0} seconds", startGameDelay), uiManager.popupDuration);
+        }
+        else if (status == "failed")
+        {
+            Debug.Log("Room deleted");
+            uiManager.ShowPopup("This room doesn't exist anymore", uiManager.popupDuration);
+            uiManager.PreviousScreen(uiScreenHome);
+
+            StopUpdatingRoomData();
+        }
+    }
 
     private IEnumerator SendRequest(JSONObject outgoingJson, bool disableScreen, Action<JSONObject> callback = null)
     {

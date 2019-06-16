@@ -169,4 +169,9 @@ public class UIScreenManager : MonoBehaviour
     {
         serverController.TestConnection();
     }
+
+    public void RequestStartGame()
+    {
+        serverController.RequestStartGame();
+    }
 }
