@@ -34,7 +34,7 @@ class Debug():
 debug = Debug(console_output = True, file_output = False)
 
 HOST = socket.gethostbyname(socket.gethostname())
-PORT = 8000
+PORT = 8009
 debug.log('SERVER HOSTED ON: ' + HOST + ':' + str(PORT), False, False)
 
 
@@ -144,7 +144,7 @@ def handle_json(json_data):
 
 		debug.log("New room created: "+str(new_room))
 
-		return {'status': 'success', 'room_pin': new_room.pin, 'time': time, 'playfield': pointsRaw, 'playerlist': playerlistRaw}
+		return {'status': 'success', 'ip': json_data['ip'], 'name': json_data['name'], 'room_pin': new_room.pin, 'time': time, 'playfield': pointsRaw, 'playerlist': playerlistRaw}
 
 
 
@@ -173,7 +173,7 @@ def handle_json(json_data):
 				playerlistRaw.append(
 					{'ip': player.ip, 'name': player.name, 'is_host': player.is_host})
 
-			return {'status': 'success', 'room_pin': room_pin, 'time': time, 'playfield': pointsRaw, 'playerlist': playerlistRaw}
+			return {'status': 'success', 'ip': json_data['ip'], 'name': json_data['name'], 'room_pin': room_pin, 'time': time, 'playfield': pointsRaw, 'playerlist': playerlistRaw}
 		else:
 			return {'status': 'failed'}
 	
@@ -192,8 +192,6 @@ def handle_json(json_data):
 
 			playerlist = rooms[room_pin].playerlist
 			for i, player in enumerate(playerlist):
-				debug.log(player.ip)
-				debug.log(json_data['ip'])
 				if player.ip == json_data['ip'] and player.name == json_data['name']:
 					
 					del playerlist[i]
@@ -210,6 +208,23 @@ def handle_json(json_data):
 		return {'status': 'failed'}
 	
 
+
+	elif json_data['action'] == 'kick_player':
+
+		debug.log("Kick player", important = True)
+		
+		room_pin = json_data['room_pin']
+
+	
+		playerlist = rooms[room_pin].playerlist
+		for i, player in enumerate(playerlist):
+			if player.ip == json_data['kick_ip'] and player.name == json_data['kick_name']:
+				
+				del playerlist[i]
+
+				debug.log(str(rooms[room_pin]))
+				return {'status': 'success', 'kick_name': json_data['kick_name']}
+		return {'status': 'failed'}
 
 	elif json_data['action'] == 'update_room_data':
 

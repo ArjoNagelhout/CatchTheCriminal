@@ -58,6 +58,8 @@ public class ServerController : MonoBehaviour
     [NonSerialized]
     public string roomPin;
     [NonSerialized]
+    public string playerIp;
+    [NonSerialized]
     public string playerName;
     [NonSerialized]
     public bool isHost;
@@ -151,6 +153,8 @@ public class ServerController : MonoBehaviour
         if (status == "success")
         {
             Debug.Log("Room created");
+            playerIp = incomingJson.GetField("ip").str;
+            playerName = incomingJson.GetField("name").str;
             uiManager.NextScreen(uiScreenRoomPlayer);
 
 
@@ -183,6 +187,8 @@ public class ServerController : MonoBehaviour
         if (status == "success")
         {
             Debug.Log("Room found");
+            playerIp = incomingJson.GetField("ip").str;
+            playerName = incomingJson.GetField("name").str;
             roomPin = incomingJson.GetField("room_pin").str;
             isHost = false;
 
@@ -197,6 +203,36 @@ public class ServerController : MonoBehaviour
         {
             Debug.Log("Room not found");
             uiManager.ShowPopup("Room not found", uiManager.popupDuration);
+        }
+    }
+
+
+    public void KickPlayer(string kickIp, string kickName)
+    {
+        JSONObject sendObject = new JSONObject();
+        sendObject.AddField("action", "kick_player");
+        sendObject.AddField("room_pin", roomPin);
+        sendObject.AddField("kick_ip", kickIp);
+        sendObject.AddField("kick_name", kickName);
+
+        StartCoroutine(SendRequest(sendObject, true, KickPlayerCallback));
+    }
+
+    private void KickPlayerCallback(JSONObject incomingJson)
+    {
+        string status = incomingJson.GetField("status").str;
+
+        if (status == "success")
+        {
+            Debug.Log("Kicked player");
+            uiManager.ShowPopup(string.Format("Kicked {0} from room", incomingJson.GetField("kick_name").str), uiManager.popupDuration);
+
+            UpdateRoomData();
+        }
+        else if (status == "failed")
+        {
+            Debug.Log("Couldn't kick player");
+            uiManager.ShowPopup("Couldn't kick player", uiManager.popupDuration);
         }
     }
 
@@ -226,6 +262,13 @@ public class ServerController : MonoBehaviour
         } else if (status == "failed")
         {
             Debug.Log("Failed to leave game");
+
+            uiManager.PreviousScreen(uiScreenHome);
+
+            uiManager.ShowPopup("Room doesn't exist anymore", uiManager.popupDuration);
+
+            StopUpdatingRoomData();
+
         }
     }
 
@@ -286,6 +329,7 @@ public class ServerController : MonoBehaviour
             // Create game object with right variables
             JSONObject playerlistJson = incomingJson.GetField("playerlist");
             game.players = new List<Player>();
+            bool kicked = true;
             foreach (JSONObject playerJson in playerlistJson)
             {
                 Player newPlayer = new Player
@@ -294,7 +338,19 @@ public class ServerController : MonoBehaviour
                     ip = playerJson.GetField("ip").str,
                     isHost = playerJson.GetField("is_host").b
                 };
+                if (newPlayer.name == playerName && newPlayer.ip == playerIp)
+                {
+                    kicked = false;
+                }
                 game.players.Add(newPlayer);
+            }
+
+            if (kicked)
+            {
+                StopUpdatingRoomData();
+
+                uiManager.ShowPopup("You have been kicked from this room", uiManager.popupDuration);
+                uiManager.PreviousScreen(uiScreenHome);
             }
 
             updateRoomData.Invoke();

@@ -7,13 +7,18 @@ public class PlayerRow : MonoBehaviour
 {
     [System.NonSerialized]
     public bool canKick;
+
+    [System.NonSerialized]
+    public string ip;
     [System.NonSerialized]
 	public string playerName;
     [System.NonSerialized]
-    public string ip;
+    public bool isHost;
 
 	public GameObject kickButton;
     public Text nameText;
+
+    private ServerController serverController;
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +27,18 @@ public class PlayerRow : MonoBehaviour
 		{
             kickButton.SetActive(false);
 		}
-
+        
         nameText.text = playerName;
+        if (isHost)
+        {
+            nameText.text += " (host)";
+        }
+
+        serverController = FindObjectOfType<ServerController>();
+    }
+
+    public void KickPlayer()
+    {
+        serverController.KickPlayer(ip, playerName);
     }
 }

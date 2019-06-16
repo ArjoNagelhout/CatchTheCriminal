@@ -58,6 +58,7 @@ public class RoomController : MonoBehaviour
             PlayerRow playerRowComponent = playerRowInstance.GetComponent<PlayerRow>();
             playerRowComponent.playerName = player.name;
             playerRowComponent.ip = player.ip;
+            playerRowComponent.isHost = player.isHost;
 
             if (serverController.isHost)
             {

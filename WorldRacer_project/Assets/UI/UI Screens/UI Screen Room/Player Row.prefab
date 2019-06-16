@@ -287,6 +287,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5509804308811714300, guid: 2c000e591e45b42a8aea714a958ceb6b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5509804308811714300, guid: 2c000e591e45b42a8aea714a958ceb6b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5509804308811714300, guid: 2c000e591e45b42a8aea714a958ceb6b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5509804308811714300, guid: 2c000e591e45b42a8aea714a958ceb6b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 6395830753798967341}
+    - target: {fileID: 5509804308811714300, guid: 2c000e591e45b42a8aea714a958ceb6b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: KickPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 5509804308811714300, guid: 2c000e591e45b42a8aea714a958ceb6b,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 8907216296723181580, guid: 2c000e591e45b42a8aea714a958ceb6b,
         type: 3}
       propertyPath: m_Text
