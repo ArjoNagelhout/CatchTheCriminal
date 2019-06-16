@@ -5,7 +5,9 @@ using UnityEngine.UI;
 
 public class UIPopup : MonoBehaviour
 {
+    [System.NonSerialized]
     public string displayString;
+    [System.NonSerialized]
     public int displayTime;
 
     public Text textComponent;

@@ -12,17 +12,28 @@ public class RoomQuitMessage : MonoBehaviour
     public string ifHost;
     [TextArea]
     public string ifNotHost;
+	[TextArea]
+	public string ifLastPlayer;
 
     // Start is called before the first frame update
     void Start()
     {
         serverController = FindObjectOfType<ServerController>();
-        if (serverController.isHost == true)
+
+        if (serverController.game.players.Count == 1)
         {
-            text.text = ifHost;
+            text.text = ifLastPlayer;
         } else
         {
-            text.text = ifNotHost;
+            if (serverController.isHost == true)
+            {
+                text.text = ifHost;
+            }
+            else
+            {
+                text.text = ifNotHost;
+            }
         }
+		
     }
 }

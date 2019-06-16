@@ -79,7 +79,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "You will be able to rejoin while the game hasn\u2019t started yet. "
+  m_Text: Quit message
 --- !u!114 &6675308552424438488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,6 +96,7 @@ MonoBehaviour:
   ifHost: "Someone else will become host, but you will be able to rejoin while the
     game hasn\u2019t started yet."
   ifNotHost: "You will be able to rejoin while the game hasn\u2019t started yet."
+  ifLastPlayer: 'The room will be deleted because you are only one in this room. '
 --- !u!1 &1453457028546353559
 GameObject:
   m_ObjectHideFlags: 0

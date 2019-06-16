@@ -365,7 +365,10 @@ public class ServerController : MonoBehaviour
         else if (status == "failed")
         {
             Debug.Log("Room deleted");
+            uiManager.ShowPopup("This room doesn't exist anymore", uiManager.popupDuration);
             uiManager.PreviousScreen(uiScreenHome);
+
+            StopUpdatingRoomData();
         }
     }
 

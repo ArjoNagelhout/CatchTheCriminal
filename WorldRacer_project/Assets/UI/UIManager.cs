@@ -10,9 +10,11 @@ public class UIManager : MonoBehaviour
 
     [System.NonSerialized]
     public UIScreenManager currentScreen;
+    [System.NonSerialized]
     public UIScreenManager currentOverlayScreen;
 
     public GameObject uiPopupObject;
+    public GameObject uiPopupLayer;
 
     public float duration = 1f;
     public int popupDuration = 2;
@@ -140,7 +142,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowPopup(string displayString, int displayTime)
     {
-        GameObject uiPopupInstance = Instantiate(uiPopupObject, gameObject.transform);
+        GameObject uiPopupInstance = Instantiate(uiPopupObject, uiPopupLayer.transform);
         UIPopup uiPopup = uiPopupInstance.GetComponent<UIPopup>();
         uiPopup.displayString = displayString;
         uiPopup.displayTime = displayTime;

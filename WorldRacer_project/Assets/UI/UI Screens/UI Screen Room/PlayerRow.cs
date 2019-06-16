@@ -14,6 +14,8 @@ public class PlayerRow : MonoBehaviour
 	public string playerName;
     [System.NonSerialized]
     public bool isHost;
+    [System.NonSerialized]
+    public bool isPlayer;
 
 	public GameObject kickButton;
     public Text nameText;
@@ -32,6 +34,11 @@ public class PlayerRow : MonoBehaviour
         if (isHost)
         {
             nameText.text += " (host)";
+        }
+
+        if (isPlayer)
+        {
+            nameText.text += " (you)";
         }
 
         serverController = FindObjectOfType<ServerController>();

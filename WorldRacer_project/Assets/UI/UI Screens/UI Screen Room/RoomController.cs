@@ -59,6 +59,10 @@ public class RoomController : MonoBehaviour
             playerRowComponent.playerName = player.name;
             playerRowComponent.ip = player.ip;
             playerRowComponent.isHost = player.isHost;
+            if (serverController.playerName == player.name)
+            {
+                playerRowComponent.isPlayer = true;
+            }
 
             if (serverController.isHost)
             {
