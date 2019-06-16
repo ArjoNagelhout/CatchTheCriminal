@@ -68,9 +68,10 @@ class Playfield(object):
 		
 
 class Player(object):
-	def __init__(self, ip: str, name: str, playertype: PlayerType):
+	def __init__(self, ip: str, name: str, is_host: bool, playertype: PlayerType):
 		self.ip = ip
 		self.name = name
+		self.is_host = is_host
 		self.playertype = playertype
 
 	def __str__(self):
@@ -81,6 +82,7 @@ class Room(object):
 		self.time = time # Time in seconds
 		self.playfield = playfield
 		self.playerlist = [host]
+		self.busy = False
 
 		self.pin = self.generate_pin()
 	
@@ -108,9 +110,15 @@ class Room(object):
 
 def handle_json(json_data):
 	global rooms
-	#print(json_data)
-	#try:
-	if json_data['action'] == 'create_game':
+
+
+
+	if json_data['action'] == 'test_connection':
+		return {'status': 'success'}
+
+
+
+	elif json_data['action'] == 'create_game':
 
 		debug.log("Create game", important = True)
 
@@ -120,25 +128,31 @@ def handle_json(json_data):
 		points = []
 		for point in pointsRaw:
 			points.append(Point(point['longitude'], point['latitude']))
-
+		
 		playfield = Playfield(points)
 
-		host = Player(json_data['ip'], json_data['name'], PlayerType.tobedetermined)
+		host = Player(json_data['ip'], json_data['name'], True, PlayerType.tobedetermined)
 
 		new_room = Room(time, playfield, host)
 
 		rooms[new_room.pin] = new_room
 
-		debug.log("New room created: "+str(new_room))
-		
+		playerlist = new_room.playerlist
+		playerlistRaw = []
+		for player in playerlist:
+			playerlistRaw.append({'ip': player.ip, 'name': player.name, 'is_host': player.is_host})
 
-		return {'status': 'success', 'room_pin': new_room.pin, 'time': time, 'playfield': pointsRaw}
+		debug.log("New room created: "+str(new_room))
+
+		return {'status': 'success', 'room_pin': new_room.pin, 'time': time, 'playfield': pointsRaw, 'playerlist': playerlistRaw}
+
+
 
 	elif json_data['action'] == 'join_game':
 
 		debug.log("Join game", important=True)
 
-		player = Player(json_data['ip'], json_data['name'], PlayerType.tobedetermined)
+		player = Player(json_data['ip'], json_data['name'], False, PlayerType.tobedetermined)
 
 		room_pin = json_data['room_pin']
 
@@ -153,9 +167,18 @@ def handle_json(json_data):
 			for point in points:
 				pointsRaw.append({'longitude': point.longitude, 'latitude': point.latitude})
 
-			return {'status': 'success', 'room_pin': room_pin, 'time': time, 'playfield': pointsRaw}
+			playerlist = rooms[room_pin].playerlist
+			playerlistRaw = []
+			for player in playerlist:
+				playerlistRaw.append(
+					{'ip': player.ip, 'name': player.name, 'is_host': player.is_host})
+
+			return {'status': 'success', 'room_pin': room_pin, 'time': time, 'playfield': pointsRaw, 'playerlist': playerlistRaw}
 		else:
 			return {'status': 'failed'}
+	
+
+
 	elif json_data['action'] == 'leave_game':
 
 		debug.log("Leave game", important=True)
@@ -177,7 +200,6 @@ def handle_json(json_data):
 
 					debug.log(str(rooms[room_pin]))
 					return {'status': 'success'}
-
 			
 		else:
 			# This means the room needs to be removed
@@ -186,6 +208,36 @@ def handle_json(json_data):
 			return {'status': 'success'}
 			
 		return {'status': 'failed'}
+	
+
+
+	elif json_data['action'] == 'update_room_data':
+
+		debug.log("Get room data", important=True)
+
+		room_pin = json_data['room_pin']
+
+		if room_pin in rooms:
+
+			time = rooms[room_pin].time
+			points = rooms[room_pin].playfield.points
+			pointsRaw = []
+			for point in points:
+				pointsRaw.append({'longitude': point.longitude,
+                                    'latitude': point.latitude})
+
+			playerlist = rooms[room_pin].playerlist
+			playerlistRaw = []
+			for player in playerlist:
+				playerlistRaw.append(
+					{'ip': player.ip, 'name': player.name, 'is_host': player.is_host})
+
+			return {'status': 'success', 'playerlist': playerlistRaw}
+		else:
+			return {'status': 'failed'}
+
+	else:
+		return {'status': 'action does not exist'}
 		
 	#except KeyError:
 #		pass

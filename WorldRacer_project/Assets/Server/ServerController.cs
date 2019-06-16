@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Networking;
 
 enum Playertype { Tobedetermined, Criminal, Cop };
@@ -30,29 +31,35 @@ public class Playfield
     }
 }
 
+
 public class Player
 {
     public string ip;
     public string name;
+    public bool isHost;
 }
+
 
 public class Game
 {
+    public bool started;
     public int time;
     public Playfield playfield;
     public List<Player> players;
 }
 
+
 public class ServerController : MonoBehaviour
 {
     public string serverAddress;
-    private string uri;
 
-    [System.NonSerialized]
+    private Dictionary<string, string> settings = new Dictionary<string, string>();
+    
+    [NonSerialized]
     public string roomPin;
-    [System.NonSerialized]
+    [NonSerialized]
     public string playerName;
-    [System.NonSerialized]
+    [NonSerialized]
     public bool isHost;
 
     public UIManager uiManager;
@@ -62,21 +69,49 @@ public class ServerController : MonoBehaviour
 
     public Game game;
 
+    public UnityEvent updateRoomData = new UnityEvent();
+    private readonly float updateRoomDataDelay = 5f;
+    private bool continueUpdatingRoomData;
 
-    void Start()
+
+    public void UpdateFields(JSONObject fieldsJson)
     {
-
-        string prefix = "http://";
-
-        if (serverAddress.StartsWith(prefix, System.StringComparison.Ordinal))
+        for (int i = 0; i < fieldsJson.list.Count; i++)
         {
-            uri = serverAddress;
-        }
-        else
-        {
-            uri = string.Format("http://{0}", serverAddress);
+            string key = fieldsJson.keys[i];
+            string value = fieldsJson.list[i].str;
+            settings[key] = value;
+            
         }
     }
+
+
+    public string GetField(string key)
+    {
+        return settings.ContainsKey(key) ? settings[key] : "";
+    }
+
+
+    public void TestConnection()
+    {
+        JSONObject sendObject = new JSONObject();
+        sendObject.AddField("action", "test_connection");
+
+        StartCoroutine(SendRequest(sendObject, false, TestConnectionCallback));
+    }
+
+
+    private void TestConnectionCallback(JSONObject incomingJson)
+    {
+        string status = incomingJson.GetField("status").str;
+
+        if (status == "success")
+        {
+            uiManager.ShowPopup("Server address is valid", uiManager.popupDuration);
+
+        }
+    }
+
 
     public void CreateGame(int time, Playfield playfield)
     {
@@ -97,38 +132,35 @@ public class ServerController : MonoBehaviour
         }
         sendObject.AddField("playfield", playfieldObject);
 
-        sendObject.AddField("name", playerName);
+        sendObject.AddField("name", GetField("name"));
 
-        StartCoroutine(SendRequest(sendObject, CreateGameCallback));
+        StartCoroutine(SendRequest(sendObject, true, CreateGameCallback));
     }
+
 
     private void CreateGameCallback(JSONObject incomingJson)
     {
         roomPin = incomingJson.GetField("room_pin").str;
-
         isHost = true;
 
         string status = incomingJson.GetField("status").str;
-        
+
+        // Create game object with right variables
+        PopulateRoom(incomingJson);
+
         if (status == "success")
         {
             Debug.Log("Room created");
             uiManager.NextScreen(uiScreenRoomPlayer);
+
+
+            StartUpdatingRoomData();
 
         } else if (status == "failed")
         {
             Debug.Log("Room not created");
             uiManager.ShowPopup("Couldn't create game.", uiManager.popupDuration);
         }
-
-        // Create game object with right variables
-
-        game = new Game()
-        {
-            time = (int)incomingJson.GetField("time").i,
-            playfield = new Playfield(incomingJson.GetField("playfield"))
-
-        };
     }
 
 
@@ -138,10 +170,11 @@ public class ServerController : MonoBehaviour
         sendObject.AddField("action", "join_game");
         sendObject.AddField("room_pin", newRoomPin);
 
-        sendObject.AddField("name", playerName);
+        sendObject.AddField("name", GetField("name"));
 
-        StartCoroutine(SendRequest(sendObject, JoinGameCallback));
+        StartCoroutine(SendRequest(sendObject, true, JoinGameCallback));
     }
+
 
     private void JoinGameCallback(JSONObject incomingJson)
     {
@@ -153,14 +186,12 @@ public class ServerController : MonoBehaviour
             roomPin = incomingJson.GetField("room_pin").str;
             isHost = false;
 
-            uiManager.NextScreen(uiScreenRoomPlayer);
+            // Create game object with right variables
+            PopulateRoom(incomingJson);
 
-            game = new Game()
-            {
-                time = (int)incomingJson.GetField("time").i,
-                playfield = new Playfield(incomingJson.GetField("playfield"))
+            StartUpdatingRoomData();
 
-            };
+            uiManager.NextScreen(uiScreenRoomPlayer);      
         }
         else if (status == "failed")
         {
@@ -174,16 +205,12 @@ public class ServerController : MonoBehaviour
     {
         JSONObject sendObject = new JSONObject();
         sendObject.AddField("action", "leave_game");
-
         sendObject.AddField("room_pin", roomPin);
+        sendObject.AddField("name", GetField("name"));
 
-        sendObject.AddField("name", playerName);
-
-        
-
-
-        StartCoroutine(SendRequest(sendObject, LeaveGameCallback));
+        StartCoroutine(SendRequest(sendObject, true, LeaveGameCallback));
     }
+
 
     private void LeaveGameCallback(JSONObject incomingJson)
     {
@@ -193,6 +220,9 @@ public class ServerController : MonoBehaviour
         {
             Debug.Log("Left game");
             uiManager.PreviousScreen(uiScreenHome);
+
+            StopUpdatingRoomData();
+
         } else if (status == "failed")
         {
             Debug.Log("Failed to leave game");
@@ -200,30 +230,134 @@ public class ServerController : MonoBehaviour
     }
 
 
-    IEnumerator SendRequest(JSONObject outgoingJson, Action<JSONObject> callback = null)
+    private void PopulateRoom(JSONObject incomingJson)
     {
-        uiManager.DeactivateScreen(uiManager.currentScreen);
-
-        if (uiManager.currentOverlayScreen != null)
+        game = new Game
         {
-            uiManager.DeactivateScreen(uiManager.currentOverlayScreen);
+            time = (int)incomingJson.GetField("time").i,
+            playfield = new Playfield(incomingJson.GetField("playfield")),
+            started = false,
+            players = new List<Player>()
+        };
+
+        JSONObject playerlistJson = incomingJson.GetField("playerlist");
+        foreach (JSONObject playerJson in playerlistJson)
+        {
+            Player newPlayer = new Player
+            {
+                name = playerJson.GetField("name").str,
+                ip = playerJson.GetField("ip").str,
+                isHost = playerJson.GetField("is_host").b
+            };
+            game.players.Add(newPlayer);
         }
+    }
+
+
+    public void UpdateRoomData()
+    {
+        JSONObject sendObject = new JSONObject();
+        sendObject.AddField("action", "update_room_data");
+        sendObject.AddField("room_pin", roomPin);
+
+        StartCoroutine(SendRequest(sendObject, false, UpdateRoomDataCallback));
+    }
+
+    public void StartUpdatingRoomData()
+    {
+        continueUpdatingRoomData = true;
+        StartCoroutine(CycleUpdateRoomData());
+    }
+
+    public void StopUpdatingRoomData()
+    {
+        continueUpdatingRoomData = false;
+    }
+
+
+    private void UpdateRoomDataCallback(JSONObject incomingJson)
+    {
+        string status = incomingJson.GetField("status").str;
+
+        if (status == "success")
+        {
+            Debug.Log("Room found");
+
+            // Create game object with right variables
+            JSONObject playerlistJson = incomingJson.GetField("playerlist");
+            game.players = new List<Player>();
+            foreach (JSONObject playerJson in playerlistJson)
+            {
+                Player newPlayer = new Player
+                {
+                    name = playerJson.GetField("name").str,
+                    ip = playerJson.GetField("ip").str,
+                    isHost = playerJson.GetField("is_host").b
+                };
+                game.players.Add(newPlayer);
+            }
+
+            updateRoomData.Invoke();
+
+        }
+        else if (status == "failed")
+        {
+            Debug.Log("Room deleted");
+            uiManager.PreviousScreen(uiScreenHome);
+        }
+    }
+
+
+    public IEnumerator CycleUpdateRoomData()
+    {
+        while (continueUpdatingRoomData)
+        {
+            UpdateRoomData();
+            yield return new WaitForSeconds(updateRoomDataDelay);
+        }
+    }
+
+
+    private IEnumerator SendRequest(JSONObject outgoingJson, bool disableScreen, Action<JSONObject> callback = null)
+    {
+        if (disableScreen)
+        {
+            uiManager.DeactivateScreen(uiManager.currentScreen);
+
+            if (uiManager.currentOverlayScreen != null)
+            {
+                uiManager.DeactivateScreen(uiManager.currentOverlayScreen);
+            }
+        }
+        
 
         Debug.Log(outgoingJson);
 
         string jsonString = outgoingJson.ToString();
         byte[] bytes = System.Text.Encoding.UTF8.GetBytes(jsonString);
 
-        using (UnityWebRequest webRequest = UnityWebRequest.Put(uri, bytes))
+        string address = GetField("serverAddress");
+
+        using (UnityWebRequest webRequest = UnityWebRequest.Put("http://"+address, bytes))
         {
             webRequest.method = "POST";
             webRequest.SetRequestHeader("Content-Type", "application/json");
 
             yield return webRequest.SendWebRequest();
 
+            if (disableScreen)
+            {
+                uiManager.ActivateScreen(uiManager.currentScreen);
+                if (uiManager.currentOverlayScreen != null)
+                {
+                    uiManager.ActivateScreen(uiManager.currentOverlayScreen);
+                }
+            }
+
             if (webRequest.isNetworkError || webRequest.isHttpError)
             {
                 Debug.Log(webRequest.error);
+                uiManager.ShowPopup("Couldn't connect to server", uiManager.popupDuration);
             }
             else
             {
@@ -234,11 +368,7 @@ public class ServerController : MonoBehaviour
                 Debug.Log(incomingJson);
                 callback?.Invoke(incomingJson);
 
-                uiManager.ActivateScreen(uiManager.currentScreen);
-                if (uiManager.currentOverlayScreen != null)
-                {
-                    uiManager.ActivateScreen(uiManager.currentOverlayScreen);
-                }
+                
 
             }
         }

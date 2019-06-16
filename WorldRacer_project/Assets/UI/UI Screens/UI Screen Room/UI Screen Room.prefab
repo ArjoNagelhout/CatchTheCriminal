@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomText: {fileID: 6425053690371012309}
   timeText: {fileID: 6768427486699336536}
+  playerList: {fileID: 364003713242544187}
+  playerRow: {fileID: 195453924745506720, guid: c25a0ceb2fe924e0aad0c30f1937744e,
+    type: 3}
 --- !u!1 &364003713242544187
 GameObject:
   m_ObjectHideFlags: 0
@@ -250,7 +253,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -406,7 +409,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2163693279333005420}
   m_HandleRect: {fileID: 2568393360578897432}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -565,8 +568,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4779763031932796724}
   m_HandleRect: {fileID: 7095754167885238337}
   m_Direction: 2
-  m_Value: 0.99999994
-  m_Size: 0.21227907
+  m_Value: 1
+  m_Size: 0.28466663
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -140,10 +140,6 @@ public class UIScreenManager : MonoBehaviour
     }
 
     // Communicate upwards to ServerController (sends messages)
-    public void SetName(string playerName)
-    {
-        serverController.playerName = playerName;
-    }
 
     public void CreateGame()
     {
@@ -167,5 +163,10 @@ public class UIScreenManager : MonoBehaviour
     public void LeaveGame()
     {
         serverController.LeaveGame();
+    }
+
+    public void TestConnection()
+    {
+        serverController.TestConnection();
     }
 }
