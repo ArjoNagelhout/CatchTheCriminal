@@ -85,6 +85,7 @@ class Room(object):
 		self.starting = False
 		self.busy = False
 		self.start_timestamp = 0
+		self.start_delay = 0
 
 		self.pin = self.generate_pin()
 	
@@ -218,7 +219,6 @@ def handle_json(json_data):
 		
 		room_pin = json_data['room_pin']
 
-	
 		playerlist = rooms[room_pin].playerlist
 		for i, player in enumerate(playerlist):
 			if player.ip == json_data['kick_ip'] and player.name == json_data['kick_name']:
@@ -254,11 +254,14 @@ def handle_json(json_data):
 
 			delay = 0
 			if (starting):
-				delay = time.time() - room.start_timestamp
+				delay = room.start_timestamp - time.time() + room.start_delay
 			
 			return {'status': 'success', 'playerlist': playerlistRaw, 'starting': starting, 'delay': delay}
 		else:
 			return {'status': 'failed'}
+
+
+
 	elif json_data['action'] == 'request_start_game':
 
 		debug.log("Request start game", important=True)

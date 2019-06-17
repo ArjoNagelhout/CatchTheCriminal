@@ -51,6 +51,7 @@ public class Game
 
 public class ServerController : MonoBehaviour
 {
+    [NonSerialized]
     public string serverAddress;
 
     private Dictionary<string, string> settings = new Dictionary<string, string>();
@@ -66,11 +67,14 @@ public class ServerController : MonoBehaviour
 
     public UIManager uiManager;
 
-    public UIScreenManager uiScreenRoomPlayer;
+    public UIScreenManager uiScreenRoom;
     public UIScreenManager uiScreenHome;
+    public UIScreenManager uiScreenGame;
+
 
     public Game game;
 
+    [System.NonSerialized]
     public UnityEvent updateRoomData = new UnityEvent();
     private readonly float updateRoomDataDelay = 5f;
     private bool continueUpdatingRoomData;
@@ -157,7 +161,7 @@ public class ServerController : MonoBehaviour
             Debug.Log("Room created");
             playerIp = incomingJson.GetField("ip").str;
             playerName = incomingJson.GetField("name").str;
-            uiManager.NextScreen(uiScreenRoomPlayer);
+            uiManager.NextScreen(uiScreenRoom);
 
 
             StartUpdatingRoomData();
@@ -199,7 +203,7 @@ public class ServerController : MonoBehaviour
 
             StartUpdatingRoomData();
 
-            uiManager.NextScreen(uiScreenRoomPlayer);      
+            uiManager.NextScreen(uiScreenRoom);      
         }
         else if (status == "failed")
         {
@@ -368,6 +372,10 @@ public class ServerController : MonoBehaviour
                 float delay = incomingJson.GetField("delay").f;
                 Debug.Log("Time before start: " + delay.ToString());
                 uiManager.ShowPopup(string.Format("Game will start in {0} seconds", delay), uiManager.popupDuration);
+
+                StartCoroutine(StartGameAfter(delay));
+
+                StopUpdatingRoomData();
             }
 
             updateRoomData.Invoke();
@@ -412,6 +420,10 @@ public class ServerController : MonoBehaviour
         if (status == "success")
         {
             uiManager.ShowPopup(string.Format("Game will start in {0} seconds", startGameDelay), uiManager.popupDuration);
+
+            StartCoroutine(StartGameAfter(startGameDelay));
+
+            StopUpdatingRoomData();
         }
         else if (status == "failed")
         {
@@ -422,6 +434,17 @@ public class ServerController : MonoBehaviour
             StopUpdatingRoomData();
         }
     }
+
+
+    IEnumerator StartGameAfter(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        uiManager.NextScreen(uiScreenGame);
+
+        StopUpdatingRoomData();
+    }
+
 
     private IEnumerator SendRequest(JSONObject outgoingJson, bool disableScreen, Action<JSONObject> callback = null)
     {

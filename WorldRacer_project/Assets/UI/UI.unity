@@ -328,15 +328,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverAddress: 192.168.2.43:8000
   uiManager: {fileID: 808048620}
-  uiScreenRoomPlayer: {fileID: 3380994802068860978, guid: 906f44f9535514d3b9d144b8bd926ee7,
+  uiScreenRoom: {fileID: 3380994802068860978, guid: 906f44f9535514d3b9d144b8bd926ee7,
     type: 3}
   uiScreenHome: {fileID: 1212336397812283709, guid: 78c0ffd7152c74fe8b4964799e7ff5b3,
     type: 3}
-  updateRoomData:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
+  uiScreenGame: {fileID: 1212336397812283709, guid: aeedb9de3ff744b7fb830441365738de,
+    type: 3}
 --- !u!4 &901691774
 Transform:
   m_ObjectHideFlags: 0
