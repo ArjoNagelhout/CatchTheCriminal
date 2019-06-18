@@ -1,12 +1,11 @@
-﻿
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
 
-enum Playertype { Tobedetermined, Criminal, Cop };
+public enum Playertype { Tobedetermined, Criminal, Cop };
 
 public class Playfield
 {
@@ -37,12 +36,17 @@ public class Player
     public string ip;
     public string name;
     public bool isHost;
+    public bool isReady;
+
+    public Vector2 position;
+
+    public Playertype playertype;
 }
 
 
 public class Game
 {
-    public bool starting;
+    public bool started;
     public int time;
     public Playfield playfield;
     public List<Player> players;
@@ -64,6 +68,15 @@ public class ServerController : MonoBehaviour
     public string playerName;
     [NonSerialized]
     public bool isHost;
+    [NonSerialized]
+    public Playertype playertype = Playertype.Tobedetermined;
+    [NonSerialized]
+    public Vector2 position;
+    [NonSerialized]
+    public Vector2 targetPosition;
+    [NonSerialized]
+    public float maxTargetDistance;
+    
 
     public UIManager uiManager;
 
@@ -74,12 +87,20 @@ public class ServerController : MonoBehaviour
 
     public Game game;
 
+    
     [System.NonSerialized]
     public UnityEvent updateRoomData = new UnityEvent();
-    private readonly float updateRoomDataDelay = 5f;
+    [System.NonSerialized]
+    public UnityEvent updateGameData = new UnityEvent();
+
+    [Header("Server update timing")]
+    public float updateRoomDataDelay;
     private bool continueUpdatingRoomData;
 
-    private readonly float startGameDelay = 6f;
+    public float updateGameDataDelay;
+    private bool continueUpdatingGameData;
+
+    public float startGameDelay;
 
 
     public void UpdateFields(JSONObject fieldsJson)
@@ -224,6 +245,7 @@ public class ServerController : MonoBehaviour
         StartCoroutine(SendRequest(sendObject, true, KickPlayerCallback));
     }
 
+
     private void KickPlayerCallback(JSONObject incomingJson)
     {
         string status = incomingJson.GetField("status").str;
@@ -286,7 +308,7 @@ public class ServerController : MonoBehaviour
         {
             time = (int)incomingJson.GetField("time").i,
             playfield = new Playfield(incomingJson.GetField("playfield")),
-            starting = false,
+            started = false,
             players = new List<Player>()
         };
 
@@ -297,36 +319,53 @@ public class ServerController : MonoBehaviour
             {
                 name = playerJson.GetField("name").str,
                 ip = playerJson.GetField("ip").str,
-                isHost = playerJson.GetField("is_host").b
+                isHost = playerJson.GetField("is_host").b,
+                playertype = Playertype.Tobedetermined
             };
             game.players.Add(newPlayer);
         }
     }
 
+    private void SetPlayerTypes(JSONObject playerlistJson)
+    {
 
+        for (int i=0; i<game.players.Count; i++)
+        {
+            Player player = game.players[i];
+
+            int raw_playertype = (int)playerlistJson[i].GetField("playertype").i;
+
+            if (raw_playertype == 1)
+            {
+                player.playertype = Playertype.Cop;
+            }
+            else if (raw_playertype == 2)
+            {
+                player.playertype = Playertype.Criminal;
+            }
+        }
+    }
+
+
+    // Update room data functions
     public void UpdateRoomData()
     {
         JSONObject sendObject = new JSONObject();
         sendObject.AddField("action", "update_room_data");
         sendObject.AddField("room_pin", roomPin);
+        sendObject.AddField("name", playerName);
 
         StartCoroutine(SendRequest(sendObject, false, UpdateRoomDataCallback));
     }
-
-
     public void StartUpdatingRoomData()
     {
         continueUpdatingRoomData = true;
         StartCoroutine(CycleUpdateRoomData());
     }
-
-
     public void StopUpdatingRoomData()
     {
         continueUpdatingRoomData = false;
     }
-
-
     private void UpdateRoomDataCallback(JSONObject incomingJson)
     {
         string status = incomingJson.GetField("status").str;
@@ -373,6 +412,19 @@ public class ServerController : MonoBehaviour
                 Debug.Log("Time before start: " + delay.ToString());
                 uiManager.ShowPopup(string.Format("Game will start in {0} seconds", delay), uiManager.popupDuration);
 
+                int playertypeInt = (int)incomingJson.GetField("playertype").i;
+
+                if (playertypeInt == 1)
+                {
+                    playertype = Playertype.Cop;
+                }
+                else if (playertypeInt == 2)
+                {
+                    playertype = Playertype.Criminal;
+                }
+
+                SetPlayerTypes(playerlistJson);
+
                 StartCoroutine(StartGameAfter(delay));
 
                 StopUpdatingRoomData();
@@ -390,14 +442,72 @@ public class ServerController : MonoBehaviour
             StopUpdatingRoomData();
         }
     }
-
-
-    public IEnumerator CycleUpdateRoomData()
+    private IEnumerator CycleUpdateRoomData()
     {
         while (continueUpdatingRoomData)
         {
             UpdateRoomData();
             yield return new WaitForSeconds(updateRoomDataDelay);
+        }
+    }
+
+
+    // Update game data functions
+    public void UpdateGameData()
+    {
+        JSONObject sendObject = new JSONObject();
+        sendObject.AddField("action", "update_game_data");
+        sendObject.AddField("room_pin", roomPin);
+        sendObject.AddField("name", playerName);
+
+        // Send current location of player
+        JSONObject positionJson = new JSONObject();
+        positionJson.AddField("longitude", position.x);
+        positionJson.AddField("latitude", position.y);
+        sendObject.AddField("position", positionJson);
+
+        StartCoroutine(SendRequest(sendObject, false, UpdateGameDataCallback));
+    }
+    public void StartUpdatingGameData()
+    {
+        continueUpdatingGameData = true;
+        StartCoroutine(CycleUpdateGameData());
+    }
+    public void StopUpdatingGameData()
+    {
+        continueUpdatingGameData = false;
+    }
+    private void UpdateGameDataCallback(JSONObject incomingJson)
+    {
+        string status = incomingJson.GetField("status").str;
+
+        if (status == "success")
+        {
+            Debug.Log("Room found");
+
+            // Check if all players are ready.
+            if (incomingJson.GetField("game_started").b)
+            {
+                // Game has started
+                // Get all player types
+            }
+
+        }
+        else if (status == "failed")
+        {
+            Debug.Log("Room deleted");
+            uiManager.ShowPopup("This room doesn't exist anymore", uiManager.popupDuration);
+            uiManager.PreviousScreen(uiScreenHome);
+
+            StopUpdatingGameData();
+        }
+    }
+    private IEnumerator CycleUpdateGameData()
+    {
+        while (continueUpdatingGameData)
+        {
+            UpdateGameData();
+            yield return new WaitForSeconds(updateGameDataDelay);
         }
     }
 
@@ -408,6 +518,7 @@ public class ServerController : MonoBehaviour
         sendObject.AddField("action", "request_start_game");
         sendObject.AddField("room_pin", roomPin);
         sendObject.AddField("delay", startGameDelay);
+        sendObject.AddField("name", playerName);
 
         StartCoroutine(SendRequest(sendObject, false, RequestStartGameCallback));
     }
@@ -423,6 +534,17 @@ public class ServerController : MonoBehaviour
 
             StartCoroutine(StartGameAfter(startGameDelay));
 
+            int raw_playertype = (int)incomingJson.GetField("playertype").i;
+
+            if (raw_playertype == 1)
+            {
+                playertype = Playertype.Cop;
+            }
+            else if (raw_playertype == 2)
+            {
+                playertype = Playertype.Criminal;
+            }
+
             StopUpdatingRoomData();
         }
         else if (status == "failed")
@@ -435,7 +557,7 @@ public class ServerController : MonoBehaviour
         }
     }
 
-
+    
     IEnumerator StartGameAfter(float time)
     {
         yield return new WaitForSeconds(time);

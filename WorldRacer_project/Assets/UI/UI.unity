@@ -326,7 +326,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b65a33aacfc44e2b81aea60bcd8d43d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverAddress: 192.168.2.43:8000
   uiManager: {fileID: 808048620}
   uiScreenRoom: {fileID: 3380994802068860978, guid: 906f44f9535514d3b9d144b8bd926ee7,
     type: 3}
@@ -334,6 +333,9 @@ MonoBehaviour:
     type: 3}
   uiScreenGame: {fileID: 1212336397812283709, guid: aeedb9de3ff744b7fb830441365738de,
     type: 3}
+  updateRoomDataDelay: 5
+  updateGameDataDelay: 5
+  startGameDelay: 6
 --- !u!4 &901691774
 Transform:
   m_ObjectHideFlags: 0

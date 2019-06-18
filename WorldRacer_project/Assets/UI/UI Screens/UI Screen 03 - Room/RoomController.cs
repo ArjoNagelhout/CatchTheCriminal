@@ -15,6 +15,10 @@ public class RoomController : MonoBehaviour
     public GameObject playerList;
     public GameObject playerRow;
 
+    public GameObject startGameObject;
+
+    public RectTransform playerListTransform;
+
     private float height;
 
     // Start is called before the first frame update
@@ -24,6 +28,17 @@ public class RoomController : MonoBehaviour
 
         roomText.text = string.Format("Room #{0}", serverController.roomPin);
         timeText.text = string.Format("Time: {0} minutes", serverController.game.time);
+
+        if (serverController.isHost)
+        {
+            startGameObject.SetActive(true);
+            playerListTransform.offsetMin = new Vector2(playerListTransform.offsetMin.x, 60);
+        }
+        else
+        {
+            startGameObject.SetActive(false);
+            playerListTransform.offsetMin = new Vector2(playerListTransform.offsetMin.x, 10);
+        }
 
         RectTransform playerRowRectTransform = playerRow.GetComponent<RectTransform>();
         height = playerRowRectTransform.rect.height;

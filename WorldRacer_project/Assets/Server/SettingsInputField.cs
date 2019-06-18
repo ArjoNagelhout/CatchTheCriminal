@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
-using UnityEngine.Events;
-using System;
-using System.Reflection;
 
 public class SettingsInputField : MonoBehaviour
 {
