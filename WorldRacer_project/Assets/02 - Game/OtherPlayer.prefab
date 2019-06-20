@@ -310,9 +310,9 @@ GameObject:
   - component: {fileID: 1106854340929502968}
   - component: {fileID: 6994051881544648411}
   - component: {fileID: 4152309399008266963}
-  - component: {fileID: 3225913689353419641}
+  - component: {fileID: 2558699421174774422}
   m_Layer: 0
-  m_Name: Player
+  m_Name: OtherPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -393,7 +393,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3225913689353419641
+--- !u!114 &2558699421174774422
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -73,7 +73,7 @@ public class GameController : MonoBehaviour
             {
                 Player player = playerList[i];
                 GameObject playerInstance = playerInstances[i];
-                PlayerScript playerInstanceScript = playerInstance.GetComponent<PlayerScript>();
+                OtherPlayerScript playerInstanceScript = playerInstance.GetComponent<OtherPlayerScript>();
                 playerInstanceScript.UpdateInformation(player.position);
             }
         }
@@ -85,14 +85,14 @@ public class GameController : MonoBehaviour
         foreach (Player player in serverController.game.players)
         {
             GameObject newPlayer = Instantiate(playerPrefab, game.transform);
-            PlayerScript playerScript = newPlayer.GetComponent<PlayerScript>();
+            OtherPlayerScript otherPlayerScript = newPlayer.GetComponent<OtherPlayerScript>();
 
-            playerScript.playerName = player.name;
-            playerScript.ip = player.ip;
-            playerScript.isHost = player.isHost;
+            otherPlayerScript.playerName = player.name;
+            otherPlayerScript.ip = player.ip;
+            otherPlayerScript.isHost = player.isHost;
             if (serverController.playerName == player.name && serverController.playerIp == player.ip)
             {
-                playerScript.isPlayer = true;
+                otherPlayerScript.isPlayer = true;
             }
 
             playerInstances.Add(newPlayer);

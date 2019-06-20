@@ -1,60 +1,45 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using Mapbox.Unity.Location;
+using Mapbox.Unity.Map;
 
 public class PlayerScript : MonoBehaviour
 {
-    public float movementSpeed;
-
     [System.NonSerialized]
-    public string ip;
-    [System.NonSerialized]
-    public string playerName;
-    [System.NonSerialized]
-    public bool isHost;
-    [System.NonSerialized]
-    public bool isPlayer;
+    public Coordinate position;
 
-    public TextMeshPro nameText;
+    bool _isInitialized;
 
-    private Vector2 targetPosition;
+    ILocationProvider _locationProvider;
+    ILocationProvider LocationProvider
+    {
+        get
+        {
+            if (_locationProvider == null)
+            {
+                _locationProvider = LocationProviderFactory.Instance.DefaultLocationProvider;
+            }
 
-    public float maxSize;
-    private float currentSize;
+            return _locationProvider;
+        }
+    }
 
-    public Transform locationUpdateSphere;
+    Vector3 _targetPosition;
 
-
-    // Start is called before the first frame update
     void Start()
     {
-        nameText.text = playerName;
-
-        if (isPlayer)
-        {
-            nameText.text += " (you)";
-        }
-
-        currentSize = maxSize;
+        LocationProviderFactory.Instance.mapManager.OnInitialized += () => _isInitialized = true;
     }
 
-    private void Update()
+    void LateUpdate()
     {
-        Vector2 oldPosition = new Vector2(transform.position.x, transform.position.z);
-        Vector2 newPosition = Vector2.Lerp(oldPosition, targetPosition, movementSpeed);
-        transform.position = new Vector3(newPosition.x, 0, newPosition.y);
-
-        if (currentSize > 0)
+        if (_isInitialized)
         {
-            currentSize = Mathf.Lerp(currentSize, 0, movementSpeed);
-            locationUpdateSphere.localScale = new Vector3(currentSize, currentSize, currentSize);
+            var map = LocationProviderFactory.Instance.mapManager;
+            Mapbox.Utils.Vector2d location = LocationProvider.CurrentLocation.LatitudeLongitude;
+            position = new Coordinate(location.x, location.y);
+            transform.localPosition = map.GeoToWorldPosition(LocationProvider.CurrentLocation.LatitudeLongitude);
         }
-    }
-
-    public void UpdateInformation(Vector2 position)
-    {
-        targetPosition = position;
-        currentSize = maxSize;
     }
 }

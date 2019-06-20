@@ -7,6 +7,19 @@ using UnityEngine.Networking;
 
 public enum Playertype { Tobedetermined, Criminal, Cop };
 
+public class Coordinate
+{
+    public double longitude;
+    public double latitude;
+
+    public Coordinate(double _longitude, double _latitude)
+    {
+        longitude = _longitude;
+        latitude = _latitude;
+
+    }
+}
+
 public class Playfield
 {
     public List<Vector2> points = new List<Vector2>();
@@ -41,7 +54,7 @@ public class Player
     public bool isHost;
     public bool isReady;
 
-    public Vector2 position;
+    public Coordinate position;
 
     public Playertype playertype;
 }
@@ -74,7 +87,7 @@ public class ServerController : MonoBehaviour
     [NonSerialized]
     public Playertype playertype = Playertype.Tobedetermined;
     [NonSerialized]
-    public Vector2 position;
+    public Coordinate position;
     [NonSerialized]
     public Vector2 targetPosition;
     [NonSerialized]
@@ -492,10 +505,21 @@ public class ServerController : MonoBehaviour
         sendObject.AddField("room_pin", roomPin);
         sendObject.AddField("name", playerName);
 
+        PlayerScript playerScript = FindObjectOfType<PlayerScript>();
+        if (playerScript != null)
+        {
+            position = playerScript.position;
+        }
+        else
+        {
+            position = new Coordinate(0, 0);
+        }
+        
+
         // Send current location of player
         JSONObject positionJson = new JSONObject();
-        positionJson.AddField("longitude", position.x);
-        positionJson.AddField("latitude", position.y);
+        positionJson.AddField("longitude", position.longitude);
+        positionJson.AddField("latitude", position.latitude);
         sendObject.AddField("position", positionJson);
 
         StartCoroutine(SendRequest(sendObject, false, UpdateGameDataCallback));

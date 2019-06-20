@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 62773117}
   m_LocalRotation: {x: 0.27059805, y: 0.6532815, z: -0.27059805, w: 0.6532815}
-  m_LocalPosition: {x: -10.499999, y: 14, z: 0.8399999}
+  m_LocalPosition: {x: -28.35, y: 29.83, z: 0.8399999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1821992713215809493}
@@ -93,7 +93,6 @@ GameObject:
   - component: {fileID: 1826197507522607979}
   - component: {fileID: 1787302508646468409}
   - component: {fileID: 1787354354438510463}
-  - component: {fileID: 1827132171922661510}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -260,22 +259,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _map: {fileID: 1787302508646468409}
---- !u!114 &1827132171922661510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1827132171922661509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcf32ea2cc0514b569329f6b6b68f9b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _map: {fileID: 0}
-  _locationStrings: []
-  _spawnScale: 100
-  _markerPrefab: {fileID: 0}
 --- !u!1 &1827174318711487035
 GameObject:
   m_ObjectHideFlags: 0
@@ -285,10 +268,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1821992713215809493}
-  - component: {fileID: 1787126461818174749}
+  - component: {fileID: 8977310571773871943}
   - component: {fileID: 1787866099786830453}
   m_Layer: 0
-  m_Name: PlayerTarget
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -311,7 +294,7 @@ Transform:
   m_Father: {fileID: 2459857606250750110}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1787126461818174749
+--- !u!114 &8977310571773871943
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -320,7 +303,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1827174318711487035}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7760043eea2cd452ba7117f2c97e0038, type: 3}
+  m_Script: {fileID: 11500000, guid: 99745d2ee72c047ffad7c3db986b98fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1787866099786830453
