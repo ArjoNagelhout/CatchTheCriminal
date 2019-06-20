@@ -37,3 +37,5 @@ A room is a dictionary:
     "384293": Room(),
     "192384": Room()
 }
+
+secret color: B25A5A

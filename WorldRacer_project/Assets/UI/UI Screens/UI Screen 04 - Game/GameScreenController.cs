@@ -9,12 +9,16 @@ public class GameScreenController : MonoBehaviour
 
     private ServerController serverController;
 
+    public Text gameStartedText;
+
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         serverController = FindObjectOfType<ServerController>();
-        string playertypeString = "You are nobody";
-        Debug.Log(serverController.playertype);
+
+        serverController.updateGameData.AddListener(UpdateGameScreen);
+
+        string playertypeString = "";
         if (serverController.playertype == Playertype.Cop)
         {
             playertypeString = "You are a cop";
@@ -27,8 +31,18 @@ public class GameScreenController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void UpdateGameScreen()
     {
-        
+        string gameStartedString;
+        if (serverController.game.started)
+        {
+            gameStartedString = "The game has started";
+        }
+        else
+        {
+            gameStartedString = "Please move to your start position";
+        }
+
+        gameStartedText.text = gameStartedString;
     }
 }

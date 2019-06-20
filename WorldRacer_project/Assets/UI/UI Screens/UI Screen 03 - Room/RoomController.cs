@@ -18,6 +18,7 @@ public class RoomController : MonoBehaviour
     public GameObject startGameObject;
 
     public RectTransform playerListTransform;
+    public RectTransform playerListContentTransform;
 
     private float height;
 
@@ -48,7 +49,7 @@ public class RoomController : MonoBehaviour
         serverController.updateRoomData.AddListener(UpdatePlayerList);
     }
 
-    void UpdatePlayerList()
+    private void UpdatePlayerList()
     {
 
 		// Remove existing rows
@@ -84,10 +85,12 @@ public class RoomController : MonoBehaviour
                 if (!player.isHost)
                 {
                     playerRowComponent.canKick = true;
+                    
                 }
             }
 
             i++;
         }
+        playerListContentTransform.sizeDelta = new Vector2(playerListContentTransform.sizeDelta.x, height * i);
     }
 }

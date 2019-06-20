@@ -6,6 +6,7 @@ import socket
 import time
 import datetime
 import random
+import math
 
 rooms = {}
 
@@ -334,6 +335,19 @@ def handle_json(json_data):
 
 		else:
 			return {'status': 'failed'}
+	elif json_data['action'] == 'get_initial_game_data':
+
+		debug.log("Get initial game data")
+
+		room_pin = json_data['room_pin']
+
+		if room_pin in rooms:
+			room = rooms[room_pin]
+
+			return {'status': 'success', 'cop_target_position': room.playfield.cop_start_position, 'criminal_target_position': room.playfield.criminal_start_position}
+		else:
+			return {'status': 'failed'}
+
 	elif json_data['action'] == 'update_game_data':
 
 		debug.log("Update game data", important = True)
@@ -357,7 +371,7 @@ def handle_json(json_data):
 					
 					current_position = Point(json_data['position']['longitude'], json_data['position']['latitude'])
 
-					distance = sqrt((target_position.x - current_position.x)**2 + (target_position.y - current_position.y)**2)
+					distance = math.sqrt((target_position.longitude - current_position.longitude)**2 + (target_position.latitude - current_position.latitude)**2)
 					
 					if (distance < room.playfield.max_distance):
 						player.is_ready = True

@@ -490,8 +490,10 @@ public class ServerController : MonoBehaviour
             {
                 // Game has started
                 // Get all player types
+                game.started = true;
             }
 
+            updateGameData.Invoke();
         }
         else if (status == "failed")
         {
@@ -565,6 +567,8 @@ public class ServerController : MonoBehaviour
         uiManager.NextScreen(uiScreenGame);
 
         StopUpdatingRoomData();
+
+        StartUpdatingGameData();
     }
 
 
