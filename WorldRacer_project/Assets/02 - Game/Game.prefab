@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 62773117}
-  m_LocalRotation: {x: 0.27059805, y: 0.6532815, z: -0.27059805, w: 0.6532815}
-  m_LocalPosition: {x: -28.35, y: 29.83, z: 0.8399999}
+  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
+  m_LocalPosition: {x: 0, y: 127.7, z: -47.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1821992713215809493}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 45, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
 --- !u!20 &62773119
 Camera:
   m_ObjectHideFlags: 0
@@ -55,7 +55,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 10000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -129,7 +129,7 @@ MonoBehaviour:
   _options:
     locationOptions:
       latitudeLongitude: 37.784179, -122.401583
-      zoom: 16
+      zoom: 13
     extentOptions:
       extentType: 0
       defaultExtents:
@@ -154,7 +154,7 @@ MonoBehaviour:
       unityTileSize: 100
     loadingTexture: {fileID: 2800000, guid: e2896a92727704803a9c422b043eae89, type: 3}
     tileMaterial: {fileID: 2100000, guid: 6732d9dc3a40d4b89badf4a4b45fe6c9, type: 2}
-  _initializeOnStart: 0
+  _initializeOnStart: 1
   _imagery:
     _layerProperty:
       sourceType: 0
@@ -286,7 +286,7 @@ Transform:
   m_GameObject: {fileID: 1827174318711487035}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 10, y: 10, z: 10}
   m_Children:
   - {fileID: 1821855280641776965}
   - {fileID: 1825764435114772095}
@@ -318,11 +318,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 061d2afb48ace4fd19611279b6cf732f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _useDeviceOrientation: 0
+  _useDeviceOrientation: 1
   _subtractUserHeading: 0
   _rotationFollowFactor: 2
   _rotateZ: 0
-  _useNegativeAngle: 0
+  _useNegativeAngle: 1
   _useTransformLocationProvider: 0
 --- !u!1 &1827179572157997503
 GameObject:
@@ -596,11 +596,8 @@ MonoBehaviour:
   _updateInterval: 1
   _sendEvent: 0
   _latitudeLongitude:
-  - 48.859489, 2.32000
-  - 48.859489, 2.32015
-  - 48.859489, 2.32030
-  - 48.859489, 2.32045
-  - 48.859489, 2.32060
+  - 52.082004, 4.381916
+  - 52.080332, 4.378154
   _heading: 112
 --- !u!1 &1827834064763986853
 GameObject:
@@ -841,7 +838,7 @@ MonoBehaviour:
   _userHeadingSmoothing: {fileID: 1787264844555116693}
   _deviceOrientationSmoothing: {fileID: 1787526793552193287}
   _editorDebuggingOnly:
-    _mockUnityInputLocation: 1
+    _mockUnityInputLocation: 0
     _locationLogFile: {fileID: 4900000, guid: 5e6bb7224cef35c4788a4817b1c9778d, type: 3}
 --- !u!1 &1827994052610363925
 GameObject:
@@ -938,7 +935,7 @@ MonoBehaviour:
   mapManager: {fileID: 1787302508646468409}
   _deviceLocationProviderUnity: {fileID: 1787719030898334657}
   _deviceLocationProviderAndroid: {fileID: 1787619887506035633}
-  _editorLocationProvider: {fileID: 1787182626971752057}
+  _editorLocationProvider: {fileID: 1787926016392256251}
   _transformLocationProvider: {fileID: 1787270397800106173}
   _dontDestroyOnLoad: 0
 --- !u!1 &1828114517029867901

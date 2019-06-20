@@ -12,7 +12,7 @@ public class Coordinate
     public double longitude;
     public double latitude;
 
-    public Coordinate(double _longitude, double _latitude)
+    public Coordinate(double _latitude, double _longitude)
     {
         longitude = _longitude;
         latitude = _latitude;
@@ -22,10 +22,10 @@ public class Coordinate
 
 public class Playfield
 {
-    public List<Vector2> points = new List<Vector2>();
+    public List<Coordinate> points = new List<Coordinate>();
 
-    public Vector2 copTargetPosition;
-    public Vector2 criminalTargetPosition;
+    public Coordinate copTargetPosition;
+    public Coordinate criminalTargetPosition;
 
     public Playfield(JSONObject playfieldJson)
     {
@@ -34,7 +34,7 @@ public class Playfield
             float longitude = pointJson.GetField("longitude").f;
             float latitude = pointJson.GetField("latitude").f;
 
-            Vector2 newPoint = new Vector2(longitude, latitude);
+            Coordinate newPoint = new Coordinate(latitude, longitude);
 
             points.Add(newPoint);
         }
@@ -92,6 +92,8 @@ public class ServerController : MonoBehaviour
     public Vector2 targetPosition;
     [NonSerialized]
     public float maxTargetDistance;
+
+    public Playfield editingPlayfield = new Playfield();
     
 
     public UIManager uiManager;
@@ -166,12 +168,12 @@ public class ServerController : MonoBehaviour
 
         JSONObject playfieldObject = new JSONObject();
 
-        List<Vector2> points = playfield.points;
-        foreach (Vector2 point in points)
+        List<Coordinate> points = playfield.points;
+        foreach (Coordinate point in points)
         {
             JSONObject pointObject = new JSONObject();
-            pointObject.AddField("longitude", point.x);
-            pointObject.AddField("latitude", point.y);
+            pointObject.AddField("longitude", point.longitude);
+            pointObject.AddField("latitude", point.latitude);
 
             playfieldObject.Add(pointObject);
         }
@@ -242,9 +244,12 @@ public class ServerController : MonoBehaviour
 
             uiManager.NextScreen(uiScreenRoom);      
         }
+        else if (status == "busy")
+        {
+            uiManager.ShowPopup("This room has already started", uiManager.popupDuration);
+        }
         else if (status == "failed")
         {
-            Debug.Log("Room not found");
             uiManager.ShowPopup("Room not found", uiManager.popupDuration);
         }
     }
@@ -486,10 +491,10 @@ public class ServerController : MonoBehaviour
         {
             Debug.Log("Room found");
             JSONObject cop_target_position = incomingJson.GetField("cop_target_position");
-            game.playfield.copTargetPosition = new Vector2(cop_target_position.GetField("longitude").f, cop_target_position.GetField("latitude").f);
+            game.playfield.copTargetPosition = new Coordinate(cop_target_position.GetField("latitude").f, cop_target_position.GetField("longitude").f);
 
             JSONObject criminal_target_position = incomingJson.GetField("criminal_target_position");
-            game.playfield.criminalTargetPosition = new Vector2(criminal_target_position.GetField("longitude").f, criminal_target_position.GetField("latitude").f);
+            game.playfield.criminalTargetPosition = new Coordinate(criminal_target_position.GetField("latitude").f, criminal_target_position.GetField("longitude").f);
         }
         else if (status == "failed")
         {
@@ -616,12 +621,12 @@ public class ServerController : MonoBehaviour
         }
     }
 
-    
+
     IEnumerator StartGameAfter(float time)
     {
         yield return new WaitForSeconds(time);
 
-        
+
 
         StopUpdatingRoomData();
 

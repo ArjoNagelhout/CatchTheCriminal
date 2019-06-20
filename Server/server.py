@@ -161,7 +161,11 @@ def handle_json(json_data):
 		room_pin = json_data['room_pin']
 
 		if room_pin in rooms:
-			rooms[room_pin].playerlist.append(player)
+			room = rooms[room_pin]
+
+			if room.busy:
+				return {'status': 'busy'}
+			room.playerlist.append(player)
 
 			debug.log(str(rooms[room_pin]))
 
@@ -291,6 +295,7 @@ def handle_json(json_data):
 			room = rooms[room_pin]
 
 			room.starting = True
+			room.busy = True
 			room.start_delay = json_data['delay']
 			room.start_timestamp = time.time()
 

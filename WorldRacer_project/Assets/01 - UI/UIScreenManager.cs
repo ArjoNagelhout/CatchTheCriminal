@@ -145,12 +145,10 @@ public class UIScreenManager : MonoBehaviour
     {
         int time = FindObjectOfType<SetTimeSliderManager>().currentTime;
 
-        Playfield playfield = new Playfield();
-
-        for (int i = 0; i < 3; i++)
+        Playfield playfield = new Playfield
         {
-            playfield.points.Add(new Vector2(i, i));
-        }
+            points = serverController.editingPlayfield.points
+        };
 
         serverController.CreateGame(time, playfield);
     }
