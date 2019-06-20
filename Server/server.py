@@ -344,7 +344,10 @@ def handle_json(json_data):
 		if room_pin in rooms:
 			room = rooms[room_pin]
 
-			return {'status': 'success', 'cop_target_position': room.playfield.cop_start_position, 'criminal_target_position': room.playfield.criminal_start_position}
+			cop_target_position_raw = {'longitude': room.playfield.cop_start_position.longitude, 'latitude': room.playfield.cop_start_position.latitude}
+			criminal_target_position_raw = {'longitude': room.playfield.criminal_start_position.longitude, 'latitude': room.playfield.criminal_start_position.latitude}
+
+			return {'status': 'success', 'cop_target_position': cop_target_position_raw, 'criminal_target_position': criminal_target_position_raw}
 		else:
 			return {'status': 'failed'}
 
