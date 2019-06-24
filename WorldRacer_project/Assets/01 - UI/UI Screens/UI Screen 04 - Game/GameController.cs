@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,10 +10,17 @@ using Mapbox.Unity.Utilities;
 public class GameController : MonoBehaviour
 {
     private ServerController serverController;
+    private UIScreenManager uiScreenManager;
 
     [Header("UI")]
     public Text playertypeText;
-    public Text gameStartedText;
+    public GameObject gameStarted;
+    public Image playertypeColor;
+
+    public Text timeuntilText;
+
+    public Material copMaterial;
+    public Material criminalMaterial;
 
     [Header("Game")]
     public GameObject gamePrefab;
@@ -21,8 +28,14 @@ public class GameController : MonoBehaviour
     public GameObject criminalTargetPositionPrefab;
     public GameObject playerPrefab;
 
-    private GameObject game;
-    private AbstractMap abstractMap;
+    public UIScreenManager copTutorialScreen;
+    public UIScreenManager criminalTutorialScreen;
+
+    public GameObject game;
+    private AbstractMap _map;
+
+    private bool hasStarted;
+    private List<GameObject> targetPositionInstances = new List<GameObject>();
 
     private List<GameObject> playerInstances = new List<GameObject>();
 
@@ -30,37 +43,70 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         serverController = FindObjectOfType<ServerController>();
+        uiScreenManager = gameObject.GetComponent<UIScreenManager>();
 
         serverController.updateGameData.AddListener(UpdateGame);
 
         string playertypeString = "";
+        string timeuntilString = "";
         if (serverController.playertype == Playertype.Cop)
         {
-            playertypeString = "You are a cop";
+            playertypeString = "Cop";
+            timeuntilString = "Time until criminal gets away:";
+            playertypeColor.material = copMaterial;
+            
         }
         else if (serverController.playertype == Playertype.Criminal)
         {
-            playertypeString = "You are a crook";
+            playertypeString = "Criminal";
+            timeuntilString = "Time until escape vehicle comes:";
+            playertypeColor.material = criminalMaterial;
+
         }
         playertypeText.text = playertypeString;
+        timeuntilText.text = timeuntilString;
+
+        PresentHelp();
 
         game = Instantiate(gamePrefab);
+        _map = game.GetComponentInChildren<AbstractMap>();
+
+        game.GetComponentInChildren<PlayfieldRenderer>().UpdateInformation(serverController.game.playfield.points);
+    }
+
+    public void PresentHelp()
+    {
+        if (serverController.playertype == Playertype.Cop)
+        {
+            uiScreenManager.SendPresentBottomOverlay(copTutorialScreen);
+        }
+        else if (serverController.playertype == Playertype.Criminal)
+        {
+            uiScreenManager.SendPresentBottomOverlay(criminalTutorialScreen);
+        }
     }
 
     // Update is called once per frame
     private void UpdateGame()
     {
-        string gameStartedString;
+        
+
         if (serverController.game.started)
         {
-            gameStartedString = "The game has started";
-        }
-        else
-        {
-            gameStartedString = "Please move to your start position";
+            if (!hasStarted)
+            {
+                gameStarted.SetActive(false);
+                serverController.uiManager.ShowPopup("The game has started", serverController.uiManager.popupDuration);
+                hasStarted = true;
+
+                foreach (GameObject targetPositionInstance in targetPositionInstances)
+                {
+                    Destroy(targetPositionInstance);
+                }
+            }
         }
 
-        gameStartedText.text = gameStartedString;
+        
 
         if (playerInstances.Count == 0)
         {
@@ -72,12 +118,17 @@ public class GameController : MonoBehaviour
             for (int i=0; i<playerList.Count; i++)
             {
                 Player player = playerList[i];
-                GameObject playerInstance = playerInstances[i];
-                OtherPlayerScript playerInstanceScript = playerInstance.GetComponent<OtherPlayerScript>();
-                playerInstanceScript.UpdateInformation(player.position);
+                GameObject otherPlayerInstance = playerInstances[i];
+                OtherPlayerScript otherPlayerInstanceScript = otherPlayerInstance.GetComponent<OtherPlayerScript>();
+                otherPlayerInstanceScript.UpdateInformation(player.position);
             }
         }
-        Debug.Log(playerInstances.Count);
+
+        if (targetPositionInstances.Count == 0)
+        {
+            SpawnTargetPosition(copTargetPositionPrefab, serverController.game.playfield.copTargetPosition);
+            SpawnTargetPosition(criminalTargetPositionPrefab, serverController.game.playfield.criminalTargetPosition);
+        }
     }
 
     private void CreatePlayerList()
@@ -90,6 +141,7 @@ public class GameController : MonoBehaviour
             otherPlayerScript.playerName = player.name;
             otherPlayerScript.ip = player.ip;
             otherPlayerScript.isHost = player.isHost;
+            otherPlayerScript.playertype = player.playertype;
             if (serverController.playerName == player.name && serverController.playerIp == player.ip)
             {
                 otherPlayerScript.isPlayer = true;
@@ -97,5 +149,14 @@ public class GameController : MonoBehaviour
 
             playerInstances.Add(newPlayer);
         }
+    }
+
+    private void SpawnTargetPosition(GameObject prefab, Coordinate coordinate)
+    {
+        GameObject newTargetPosition = Instantiate(prefab, game.transform);
+
+        TargetPosition newTargetPositionScript = newTargetPosition.GetComponent<TargetPosition>();
+        newTargetPositionScript.UpdateInformation(coordinate);
+        targetPositionInstances.Add(newTargetPosition);
     }
 }

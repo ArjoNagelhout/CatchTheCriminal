@@ -27,12 +27,23 @@ public class MapEditorManager : MonoBehaviour
     public QuadTreeCameraMovement cameraMovement;
     public CurrentLocation currentLocation;
 
+    public LineRenderer lineRenderer;
+
     private ServerController serverController;
 
     private void Start()
     {
-        currentLocation.onLoad.AddListener(CreatePoints);
+        
         serverController = FindObjectOfType<ServerController>();
+
+        if (serverController.editingPlayfield.points.Count == 0)
+        {
+            currentLocation.onLoad.AddListener(CreatePoints);
+        } else
+        {
+            currentLocation.onLoad.AddListener(LoadPoints);
+        }
+        
     }
 
     void CreatePoints()
@@ -41,6 +52,7 @@ public class MapEditorManager : MonoBehaviour
         // Create points around current location
         Vector3 center = transform.position;
 
+        lineRenderer.positionCount = pointAmount;
         for (int i = 0; i < pointAmount; i++)
         {
 
@@ -52,6 +64,29 @@ public class MapEditorManager : MonoBehaviour
             Coordinate coordinate = new Coordinate(vector2d.x, vector2d.y);
             coordinates.Add(coordinate);
             points.Add(newPoint);
+            lineRenderer.SetPosition(i, MoveTowardsCamera(newPoint.transform.localPosition));
+        }
+    }
+
+    void LoadPoints()
+    {
+        coordinates = serverController.editingPlayfield.points;
+        
+
+        pointAmount = coordinates.Count;
+        lineRenderer.positionCount = pointAmount;
+        
+        for (int i = 0; i < pointAmount; i++)
+        {
+            
+            GameObject newPoint = Instantiate(pointPrefab, gameObject.transform, true);
+
+            Coordinate coordinate = coordinates[i];
+            Vector2d vector2d = new Vector2d(coordinate.latitude, coordinate.longitude);
+            newPoint.transform.localPosition = _map.GeoToWorldPosition(vector2d);
+
+            points.Add(newPoint);
+            lineRenderer.SetPosition(i, MoveTowardsCamera(newPoint.transform.localPosition));
         }
     }
 
@@ -71,6 +106,7 @@ public class MapEditorManager : MonoBehaviour
                 Coordinate coordinate = coordinates[i];
                 Vector2d vector2d = new Vector2d(coordinate.latitude, coordinate.longitude);
                 point.transform.localPosition = _map.GeoToWorldPosition(vector2d);
+                lineRenderer.SetPosition(i, MoveTowardsCamera(point.transform.localPosition));
             }
         }
     }
@@ -83,6 +119,7 @@ public class MapEditorManager : MonoBehaviour
             Vector2d vector2d = _map.WorldToGeoPosition(point.transform.localPosition);
             Coordinate coordinate = new Coordinate(vector2d.x, vector2d.y);
             coordinates[i] = coordinate;
+            lineRenderer.SetPosition(i, MoveTowardsCamera(point.transform.localPosition));
         }
     }
 
@@ -93,5 +130,11 @@ public class MapEditorManager : MonoBehaviour
         position.z = center.z + radius * Mathf.Cos(rotation * Mathf.Deg2Rad);
         position.y = center.y;
         return position;
+    }
+
+    Vector3 MoveTowardsCamera(Vector3 inputVector)
+    {
+        Vector3 outputVector = new Vector3(inputVector.x, inputVector.y + 1, inputVector.z);
+        return outputVector;
     }
 }

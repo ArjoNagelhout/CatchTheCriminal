@@ -66,3 +66,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 6382667038892561464}
   animationComponent: {fileID: 482531246332709461}
+  background: {fileID: 0}

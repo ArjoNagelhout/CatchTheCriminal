@@ -27,7 +27,7 @@ public class Point : MonoBehaviour
         Vector3 distance_to_screen = Camera.main.WorldToScreenPoint(transform.position);
         Vector3 pos_move = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen.z));
         transform.position = new Vector3(pos_move.x - distance.x, transform.position.y, pos_move.z - distance.z);
-
+        mapEditorManager.MovedPoints();
     }
 
     private void OnMouseUp()

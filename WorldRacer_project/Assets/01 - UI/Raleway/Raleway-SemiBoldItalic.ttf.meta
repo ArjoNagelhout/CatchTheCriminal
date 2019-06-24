@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: d8527f4fefb924341895b343aa53cbb6
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Raleway SemiBold
+  fontNames:
+  - Raleway SemiBold
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 948d6d0995a3d475da769865c6a20aa0, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

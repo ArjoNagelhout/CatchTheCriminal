@@ -3,11 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mapbox.Unity.Location;
 using Mapbox.Unity.Map;
+using TMPro;
 
 public class PlayerScript : MonoBehaviour
 {
     [System.NonSerialized]
     public Coordinate position;
+
+    private ServerController serverController;
+
+    public MeshRenderer meshRenderer;
+
+    public Material copMaterial;
+    public Material criminalMaterial;
+
+    public TextMeshPro nameText;
 
     bool _isInitialized;
 
@@ -30,6 +40,19 @@ public class PlayerScript : MonoBehaviour
     void Start()
     {
         LocationProviderFactory.Instance.mapManager.OnInitialized += () => _isInitialized = true;
+
+        serverController = FindObjectOfType<ServerController>();
+
+        nameText.text = serverController.playerName + " (you)";
+
+        if (serverController.playertype == Playertype.Cop)
+        {
+            meshRenderer.material = copMaterial;
+        }
+        else if (serverController.playertype == Playertype.Criminal)
+        {
+            meshRenderer.material = criminalMaterial;
+        }
     }
 
     void LateUpdate()

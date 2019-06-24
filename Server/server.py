@@ -7,6 +7,7 @@ import time
 import datetime
 import random
 import math
+import geopy.distance
 
 rooms = {}
 
@@ -54,9 +55,9 @@ class Point(object):
 class Playfield(object):
 	def __init__(self, points: List[Point]):
 		self.points = points # List of points that define the playfield
-		self.criminal_start_position = Point(10, 20)
-		self.cop_start_position = Point(30, 40)
-		self.max_distance = 20
+		self.criminal_start_position = Point(0, 0)
+		self.cop_start_position = Point(0, 0)
+		self.max_distance = 120
 	
 	def __str__(self):
 		string = ""
@@ -72,6 +73,7 @@ class Player(object):
 		self.is_host = is_host
 		self.playertype = playertype
 		self.is_ready = False
+		self.position = Point(0, 0)
 
 	def __str__(self):
 		return "ip: "+self.ip+", name: "+self.name+", playertype: "+str(self.playertype)
@@ -87,6 +89,7 @@ class Room(object):
 		self.start_delay = 0
 		self.game_started = False
 		self.ciminal_amount = 1
+		self.caught = False
 
 		self.pin = self.generate_pin()
 	
@@ -342,12 +345,15 @@ def handle_json(json_data):
 			return {'status': 'failed'}
 	elif json_data['action'] == 'get_initial_game_data':
 
-		debug.log("Get initial game data")
+		debug.log("Get initial game data", important=True)
 
 		room_pin = json_data['room_pin']
 
 		if room_pin in rooms:
 			room = rooms[room_pin]
+
+			room.playfield.cop_start_position = room.playfield.points[0]
+			room.playfield.criminal_start_position = room.playfield.points[2]
 
 			cop_target_position_raw = {'longitude': room.playfield.cop_start_position.longitude, 'latitude': room.playfield.cop_start_position.latitude}
 			criminal_target_position_raw = {'longitude': room.playfield.criminal_start_position.longitude, 'latitude': room.playfield.criminal_start_position.latitude}
@@ -364,7 +370,13 @@ def handle_json(json_data):
 
 		if room_pin in rooms:
 			room = rooms[room_pin]
+			
+			if json_data['caught'] == True:
+				room.caught = True
+
+			# Check if the game can start
 			game_can_start = True
+
 
 			for i, player in enumerate(room.playerlist):
 				if player.ip == json_data['ip'] and player.name == json_data['name']:
@@ -378,9 +390,15 @@ def handle_json(json_data):
 						target_position = room.playfield.criminal_start_position
 					
 					current_position = Point(json_data['position']['longitude'], json_data['position']['latitude'])
+					player.position = current_position
 
-					distance = math.sqrt((target_position.longitude - current_position.longitude)**2 + (target_position.latitude - current_position.latitude)**2)
+					#distance = math.sqrt((target_position.longitude - current_position.longitude)**2 + (target_position.latitude - current_position.latitude)**2)
+					first_coord = (current_position.latitude, current_position.longitude)
+					second_coord = (target_position.latitude, target_position.longitude)
+					distance = geopy.distance.distance(first_coord, second_coord).m
 					
+					debug.log(str(distance))
+
 					if (distance < room.playfield.max_distance):
 						player.is_ready = True
 				
@@ -391,7 +409,16 @@ def handle_json(json_data):
 				room.game_started = True			
 			
 
-			return {'status': 'success', 'game_started': room.game_started}
+
+			playerlist = room.playerlist
+			playerlistRaw = []
+			for player in playerlist:
+
+				playerlistRaw.append(
+					{'ip': player.ip, 'name': player.name, 'position': {'longitude': player.position.longitude, 'latitude': player.position.latitude}})
+
+
+			return {'status': 'success', 'game_started': room.game_started, 'playerlist': playerlistRaw, 'caught': room.caught}
 		else:
 			return {'status': 'failed'}
 

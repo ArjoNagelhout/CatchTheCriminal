@@ -401,6 +401,14 @@ MonoBehaviour:
     type: 3}
   uiScreenGame: {fileID: 1212336397812283709, guid: aeedb9de3ff744b7fb830441365738de,
     type: 3}
+  uiScreenCopsWinCriminal: {fileID: 7204217144941093270, guid: 650497578ada24e468dd057fd006a1f3,
+    type: 3}
+  uiScreenCriminalWinsCriminal: {fileID: 7204217144941093270, guid: 0077f7396352f4f5f8e03ac6d3888c43,
+    type: 3}
+  uiScreenCopsWinCops: {fileID: 7204217144941093270, guid: 79b2de8c9279f4dc0b7f89c817f8d21e,
+    type: 3}
+  uiScreenCriminalWinsCops: {fileID: 7204217144941093270, guid: d5c617ad38cd24ff58c7590139c736f1,
+    type: 3}
   updateRoomDataDelay: 5
   updateGameDataDelay: 5
   startGameDelay: 6

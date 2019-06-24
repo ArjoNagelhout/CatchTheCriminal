@@ -66,6 +66,7 @@ public class Game
     public int time;
     public Playfield playfield;
     public List<Player> players;
+    public bool caught;
 }
 
 
@@ -93,7 +94,14 @@ public class ServerController : MonoBehaviour
     [NonSerialized]
     public float maxTargetDistance;
 
-    public Playfield editingPlayfield = new Playfield();
+    [NonSerialized]
+    public float currentTime;
+
+    public Playfield editingPlayfield = new Playfield
+    {
+        points = new List<Coordinate>()
+    };
+    
     
 
     public UIManager uiManager;
@@ -101,6 +109,11 @@ public class ServerController : MonoBehaviour
     public UIScreenManager uiScreenRoom;
     public UIScreenManager uiScreenHome;
     public UIScreenManager uiScreenGame;
+
+    public UIScreenManager uiScreenCopsWinCriminal;
+    public UIScreenManager uiScreenCriminalWinsCriminal;
+    public UIScreenManager uiScreenCopsWinCops;
+    public UIScreenManager uiScreenCriminalWinsCops;
 
 
     public Game game;
@@ -120,6 +133,29 @@ public class ServerController : MonoBehaviour
 
     public float startGameDelay;
 
+    private void Update()
+    {
+        if (game != null)
+        {
+            if (game.started)
+            {
+                currentTime -= Time.deltaTime;
+
+                if (currentTime <= 0)
+                {
+                    if (playertype == Playertype.Cop)
+                    {
+                        uiManager.NextScreen(uiScreenCriminalWinsCops);
+                    } else if (playertype == Playertype.Criminal)
+                    {
+                        uiManager.NextScreen(uiScreenCriminalWinsCriminal);
+                    }
+                    
+                }
+            }
+        }
+        
+    }
 
     public void UpdateFields(JSONObject fieldsJson)
     {
@@ -162,12 +198,17 @@ public class ServerController : MonoBehaviour
 
     public void CreateGame(int time, Playfield playfield)
     {
+        if (playfield.points.Count == 0)
+        {
+            uiManager.ShowPopup("Please define the playfield first.", uiManager.popupDuration);
+            return;
+        }
+
         JSONObject sendObject = new JSONObject();
         sendObject.AddField("action", "create_game");
         sendObject.AddField("time", time);
 
         JSONObject playfieldObject = new JSONObject();
-
         List<Coordinate> points = playfield.points;
         foreach (Coordinate point in points)
         {
@@ -197,7 +238,6 @@ public class ServerController : MonoBehaviour
 
         if (status == "success")
         {
-            Debug.Log("Room created");
             playerIp = incomingJson.GetField("ip").str;
             playerName = incomingJson.GetField("name").str;
             uiManager.NextScreen(uiScreenRoom);
@@ -325,6 +365,7 @@ public class ServerController : MonoBehaviour
 
     private void PopulateRoom(JSONObject incomingJson)
     {
+
         game = new Game
         {
             time = (int)incomingJson.GetField("time").i,
@@ -393,7 +434,6 @@ public class ServerController : MonoBehaviour
 
         if (status == "success")
         {
-            Debug.Log("Room found");
 
             // Create game object with right variables
             JSONObject playerlistJson = incomingJson.GetField("playerlist");
@@ -489,7 +529,6 @@ public class ServerController : MonoBehaviour
 
         if (status == "success")
         {
-            Debug.Log("Room found");
             JSONObject cop_target_position = incomingJson.GetField("cop_target_position");
             game.playfield.copTargetPosition = new Coordinate(cop_target_position.GetField("latitude").f, cop_target_position.GetField("longitude").f);
 
@@ -509,6 +548,8 @@ public class ServerController : MonoBehaviour
         sendObject.AddField("action", "update_game_data");
         sendObject.AddField("room_pin", roomPin);
         sendObject.AddField("name", playerName);
+        sendObject.AddField("caught", game.caught);
+        
 
         PlayerScript playerScript = FindObjectOfType<PlayerScript>();
         if (playerScript != null)
@@ -545,14 +586,49 @@ public class ServerController : MonoBehaviour
 
         if (status == "success")
         {
-            Debug.Log("Room found");
 
             // Check if all players are ready.
             if (incomingJson.GetField("game_started").b)
             {
-                // Game has started
-                // Get all player types
-                game.started = true;
+                if (!game.started)
+                {
+                    // Game has started
+                    // Get all player types
+                    game.started = true;
+
+                    currentTime = game.time * 60;
+                }
+
+                
+            }
+
+            game.caught = incomingJson.GetField("caught").b;
+
+            if (game.caught)
+            {
+                if (playertype == Playertype.Cop)
+                {
+                    uiManager.NextScreen(uiScreenCopsWinCops);
+                }
+                else if (playertype == Playertype.Criminal)
+                {
+                    uiManager.NextScreen(uiScreenCopsWinCriminal);
+                }
+                Destroy(FindObjectOfType<GameController>().game);
+            }
+
+            JSONObject playerlistJson = incomingJson.GetField("playerlist");
+
+            int length = playerlistJson.Count;
+
+            for (int i=0; i<length; i++)
+            {
+                Player player = game.players[i];
+                JSONObject playerJson = playerlistJson[i];
+
+                JSONObject positionJson = playerJson.GetField("position");
+                Coordinate newCoordinate = new Coordinate(positionJson.GetField("latitude").f, positionJson.GetField("longitude").f);
+                player.position = newCoordinate;
             }
 
             updateGameData.Invoke();

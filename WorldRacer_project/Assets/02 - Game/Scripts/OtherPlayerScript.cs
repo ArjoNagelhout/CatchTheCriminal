@@ -2,9 +2,15 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Mapbox.Utils;
+using Mapbox.Unity.Map;
 
 public class OtherPlayerScript : MonoBehaviour
 {
+    private AbstractMap _map;
+
+    public float resizeSpeed;
+
     public float movementSpeed;
 
     [System.NonSerialized]
@@ -15,6 +21,13 @@ public class OtherPlayerScript : MonoBehaviour
     public bool isHost;
     [System.NonSerialized]
     public bool isPlayer;
+    [System.NonSerialized]
+    public Playertype playertype;
+
+    public Material copMaterial;
+    public Material criminalMaterial;
+
+    public MeshRenderer meshRenderer;
 
     public TextMeshPro nameText;
 
@@ -29,12 +42,24 @@ public class OtherPlayerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _map = FindObjectOfType<AbstractMap>();
+
+
         nameText.text = playerName;
 
         if (isPlayer)
         {
             //nameText.text += " (you)";
             gameObject.SetActive(false);
+        }
+
+        if (playertype == Playertype.Cop)
+        {
+            meshRenderer.material = copMaterial;
+        }
+        else if (playertype == Playertype.Criminal)
+        {
+            meshRenderer.material = criminalMaterial;
         }
 
         currentSize = maxSize;
@@ -48,14 +73,17 @@ public class OtherPlayerScript : MonoBehaviour
 
         if (currentSize > 0)
         {
-            currentSize = Mathf.Lerp(currentSize, 0, movementSpeed);
+            currentSize = Mathf.Lerp(currentSize, 0, resizeSpeed);
             locationUpdateSphere.localScale = new Vector3(currentSize, currentSize, currentSize);
         }
     }
 
-    public void UpdateInformation(Coordinate position)
+    public void UpdateInformation(Coordinate coordinate)
     {
         //targetPosition = position;
         currentSize = maxSize;
+
+        Vector2d vector2d = new Vector2d(coordinate.latitude, coordinate.longitude);
+        targetPosition = _map.GeoToWorldPosition(vector2d);
     }
 }

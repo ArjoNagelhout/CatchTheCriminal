@@ -13,8 +13,6 @@ public class UIScreenManager : MonoBehaviour
 
     
 
-    
-
     public void Awake()
     {
         uiManager = FindObjectOfType<UIManager>();
@@ -145,12 +143,8 @@ public class UIScreenManager : MonoBehaviour
     {
         int time = FindObjectOfType<SetTimeSliderManager>().currentTime;
 
-        Playfield playfield = new Playfield
-        {
-            points = serverController.editingPlayfield.points
-        };
 
-        serverController.CreateGame(time, playfield);
+        serverController.CreateGame(time, serverController.editingPlayfield);
     }
 
     public void JoinGame(Text roomPin)
@@ -171,5 +165,10 @@ public class UIScreenManager : MonoBehaviour
     public void RequestStartGame()
     {
         serverController.RequestStartGame();
+    }
+
+    public void Catch()
+    {
+        serverController.game.caught = true;
     }
 }
