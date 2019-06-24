@@ -150,7 +150,8 @@ public class ServerController : MonoBehaviour
                     {
                         uiManager.NextScreen(uiScreenCriminalWinsCriminal);
                     }
-                    
+                    StopUpdatingGameData();
+
                 }
             }
         }
@@ -615,6 +616,7 @@ public class ServerController : MonoBehaviour
                     uiManager.NextScreen(uiScreenCopsWinCriminal);
                 }
                 Destroy(FindObjectOfType<GameController>().game);
+                StopUpdatingGameData();
             }
 
             JSONObject playerlistJson = incomingJson.GetField("playerlist");

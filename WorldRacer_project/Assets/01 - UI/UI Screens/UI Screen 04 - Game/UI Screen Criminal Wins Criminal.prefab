@@ -834,7 +834,7 @@ PrefabInstance:
     - target: {fileID: 3573747360412652055, guid: 1dbadfa788d294bdd8e91114ec4e5d43,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3573747360412652055, guid: 1dbadfa788d294bdd8e91114ec4e5d43,
         type: 3}
@@ -849,13 +849,19 @@ PrefabInstance:
     - target: {fileID: 3573747360412652055, guid: 1dbadfa788d294bdd8e91114ec4e5d43,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SendDismissBottomOverlay
+      value: SendPreviousScreen
       objectReference: {fileID: 0}
     - target: {fileID: 3573747360412652055, guid: 1dbadfa788d294bdd8e91114ec4e5d43,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
+      value: UIScreenManager, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 3573747360412652055, guid: 1dbadfa788d294bdd8e91114ec4e5d43,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 1212336397812283709, guid: 78c0ffd7152c74fe8b4964799e7ff5b3,
+        type: 3}
     - target: {fileID: 464587222444682471, guid: 1dbadfa788d294bdd8e91114ec4e5d43,
         type: 3}
       propertyPath: m_Text

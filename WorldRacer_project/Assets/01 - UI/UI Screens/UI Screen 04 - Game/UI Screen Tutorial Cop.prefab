@@ -558,7 +558,7 @@ PrefabInstance:
     - target: {fileID: 7932758268553586714, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
       propertyPath: m_Text
-      value: You have been caught!
+      value: How to play (cop)
       objectReference: {fileID: 0}
     - target: {fileID: 7932758268553586714, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
