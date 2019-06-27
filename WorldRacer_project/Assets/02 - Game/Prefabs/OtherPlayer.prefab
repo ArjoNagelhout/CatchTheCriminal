@@ -198,13 +198,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 097d0e6c8823149f5a2ac77166387b9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resizeSpeed: 0.01
+  resizeSpeed: 0.025
   movementSpeed: 0.2
   copMaterial: {fileID: 2100000, guid: 3c95e2c59e9c84785894c30c5a051a9f, type: 2}
   criminalMaterial: {fileID: 2100000, guid: c30a578e591e344ee94a73fa3724bcd1, type: 2}
   meshRenderer: {fileID: 6994051881544648411}
   nameText: {fileID: 4245919386624049921}
-  maxSize: 10
+  maxSize: 5
   locationUpdateSphere: {fileID: 9065610561836189527}
 --- !u!1001 &6233942874603151345
 PrefabInstance:
@@ -217,6 +217,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Name
+      objectReference: {fileID: 0}
+    - target: {fileID: 7813713657944579312, guid: 967eaa9c121104317bc95b352cad6c70,
+        type: 3}
+      propertyPath: m_havePropertiesChanged
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7813713657944579312, guid: 967eaa9c121104317bc95b352cad6c70,
+        type: 3}
+      propertyPath: m_isInputParsingRequired
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2821647614180650115, guid: 967eaa9c121104317bc95b352cad6c70,
         type: 3}
@@ -327,16 +337,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813713657944579312, guid: 967eaa9c121104317bc95b352cad6c70,
-        type: 3}
-      propertyPath: m_havePropertiesChanged
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813713657944579312, guid: 967eaa9c121104317bc95b352cad6c70,
-        type: 3}
-      propertyPath: m_isInputParsingRequired
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 967eaa9c121104317bc95b352cad6c70, type: 3}

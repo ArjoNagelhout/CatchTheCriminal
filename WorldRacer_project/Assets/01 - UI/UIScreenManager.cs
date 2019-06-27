@@ -171,4 +171,9 @@ public class UIScreenManager : MonoBehaviour
     {
         serverController.game.caught = true;
     }
+
+    public void ExitGame()
+    {
+        serverController.ExitGame();
+    }
 }

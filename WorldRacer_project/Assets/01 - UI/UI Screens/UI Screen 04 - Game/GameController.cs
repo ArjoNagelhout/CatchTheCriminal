@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour
 
     [Header("UI")]
     public Text playertypeText;
-    public GameObject gameStarted;
+    public Text gameStartText;
     public Image playertypeColor;
 
     public Text timeuntilText;
@@ -31,6 +31,7 @@ public class GameController : MonoBehaviour
     public UIScreenManager copTutorialScreen;
     public UIScreenManager criminalTutorialScreen;
 
+    [System.NonSerialized]
     public GameObject game;
     private AbstractMap _map;
 
@@ -72,6 +73,8 @@ public class GameController : MonoBehaviour
         _map = game.GetComponentInChildren<AbstractMap>();
 
         game.GetComponentInChildren<PlayfieldRenderer>().UpdateInformation(serverController.game.playfield.points);
+
+        serverController.getInitialGameData.AddListener(SpawnTargetPositions);
     }
 
     public void PresentHelp()
@@ -86,16 +89,13 @@ public class GameController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     private void UpdateGame()
     {
-        
-
         if (serverController.game.started)
         {
             if (!hasStarted)
             {
-                gameStarted.SetActive(false);
+                gameStartText.text = "";
                 serverController.uiManager.ShowPopup("The game has started", serverController.uiManager.popupDuration);
                 hasStarted = true;
 
@@ -104,9 +104,18 @@ public class GameController : MonoBehaviour
                     Destroy(targetPositionInstance);
                 }
             }
+        } else
+        {
+            if (serverController.isAtStart)
+            {
+                gameStartText.text = "Wait for other players to get to their start position.";
+            } else
+            {
+                gameStartText.text = "Please move to your start position.";
+            }
         }
 
-        
+
 
         if (playerInstances.Count == 0)
         {
@@ -122,12 +131,15 @@ public class GameController : MonoBehaviour
                 OtherPlayerScript otherPlayerInstanceScript = otherPlayerInstance.GetComponent<OtherPlayerScript>();
                 otherPlayerInstanceScript.UpdateInformation(player.position);
             }
-        }
 
-        if (targetPositionInstances.Count == 0)
-        {
-            SpawnTargetPosition(copTargetPositionPrefab, serverController.game.playfield.copTargetPosition);
-            SpawnTargetPosition(criminalTargetPositionPrefab, serverController.game.playfield.criminalTargetPosition);
+            if (targetPositionInstances.Count > 0)
+            {
+                foreach (GameObject targetPositionInstance in targetPositionInstances)
+                {
+                    TargetPosition targetPosition = targetPositionInstance.GetComponent<TargetPosition>();
+                    targetPosition.UpdateInformation(targetPosition.targetCoordinate);
+                }
+            }
         }
     }
 
@@ -142,6 +154,7 @@ public class GameController : MonoBehaviour
             otherPlayerScript.ip = player.ip;
             otherPlayerScript.isHost = player.isHost;
             otherPlayerScript.playertype = player.playertype;
+            Debug.Log(player.playertype);
             if (serverController.playerName == player.name && serverController.playerIp == player.ip)
             {
                 otherPlayerScript.isPlayer = true;
@@ -158,5 +171,11 @@ public class GameController : MonoBehaviour
         TargetPosition newTargetPositionScript = newTargetPosition.GetComponent<TargetPosition>();
         newTargetPositionScript.UpdateInformation(coordinate);
         targetPositionInstances.Add(newTargetPosition);
+    }
+
+    private void SpawnTargetPositions()
+    {
+        SpawnTargetPosition(copTargetPositionPrefab, serverController.game.playfield.copTargetPosition);
+        SpawnTargetPosition(criminalTargetPositionPrefab, serverController.game.playfield.criminalTargetPosition);
     }
 }

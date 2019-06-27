@@ -26,7 +26,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playertypeText: {fileID: 395320100192168799}
-  gameStarted: {fileID: 3105796089501922231}
+  gameStartText: {fileID: 6071369639653469825}
   playertypeColor: {fileID: 6543519730239835170}
   timeuntilText: {fileID: 1810821977240228911}
   copMaterial: {fileID: 2100000, guid: a31eaf6043e994932ab554f71a879721, type: 2}
@@ -459,7 +459,7 @@ PrefabInstance:
     - target: {fileID: 1246659329084372268, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
       propertyPath: m_Name
-      value: UI Game Started
+      value: UI Game Start
       objectReference: {fileID: 0}
     - target: {fileID: 5807537033395964712, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
@@ -569,7 +569,7 @@ PrefabInstance:
     - target: {fileID: 7932758268553586714, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
       propertyPath: m_Text
-      value: Please move to your start position
+      value: Game start message
       objectReference: {fileID: 0}
     - target: {fileID: 7932758268553586714, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
@@ -598,12 +598,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6fdf7994b8caa40cf9df2a1a1f56e949, type: 3}
---- !u!1 &3105796089501922231 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1246659329084372268, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
+--- !u!114 &6071369639653469825 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7932758268553586714, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
     type: 3}
   m_PrefabInstance: {fileID: 4203836579276326555}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6737955544860062171
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -883,7 +889,7 @@ PrefabInstance:
     - target: {fileID: 7932758268553586714, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
       propertyPath: m_Text
-      value: Criminal
+      value: Type
       objectReference: {fileID: 0}
     - target: {fileID: 7932758268553586714, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
@@ -1009,7 +1015,7 @@ PrefabInstance:
     - target: {fileID: 5807537033395964712, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 110
       objectReference: {fileID: 0}
     - target: {fileID: 5807537033395964712, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
@@ -1049,7 +1055,7 @@ PrefabInstance:
     - target: {fileID: 7932758268553586714, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}
       propertyPath: m_Text
-      value: Time until escape vehicle comes
+      value: 'Time message:'
       objectReference: {fileID: 0}
     - target: {fileID: 7932758268553586714, guid: 6fdf7994b8caa40cf9df2a1a1f56e949,
         type: 3}

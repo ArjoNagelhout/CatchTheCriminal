@@ -134,7 +134,8 @@ MonoBehaviour:
   timeText: {fileID: 8174074015113127683}
   minTime: 10
   maxTime: 120
-  currentTime: 0
+  currentTime: 60
+  entry: time
 --- !u!1 &7936579648045025171
 GameObject:
   m_ObjectHideFlags: 0

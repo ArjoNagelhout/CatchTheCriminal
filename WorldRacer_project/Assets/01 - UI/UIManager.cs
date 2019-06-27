@@ -37,6 +37,10 @@ public class UIManager : MonoBehaviour
 
     public void PresentBottomOverlay(UIScreenManager overlayScreen)
     {
+        if (currentOverlayScreen != null)
+        {
+            DismissBottomOverlay();
+        }
         PresentOverlay(overlayScreen, new Vector2(0, 1), duration);
     }
 

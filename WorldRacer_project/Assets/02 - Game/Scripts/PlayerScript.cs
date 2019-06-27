@@ -63,6 +63,8 @@ public class PlayerScript : MonoBehaviour
             Mapbox.Utils.Vector2d location = LocationProvider.CurrentLocation.LatitudeLongitude;
             position = new Coordinate(location.x, location.y);
             transform.localPosition = map.GeoToWorldPosition(LocationProvider.CurrentLocation.LatitudeLongitude);
+
+            serverController.position = position;
         }
     }
 }

@@ -38,12 +38,14 @@ public class OtherPlayerScript : MonoBehaviour
 
     public Transform locationUpdateSphere;
 
+    private ServerController serverController;
+
 
     // Start is called before the first frame update
     void Start()
     {
         _map = FindObjectOfType<AbstractMap>();
-
+        serverController = FindObjectOfType<ServerController>();
 
         nameText.text = playerName;
 
@@ -75,6 +77,14 @@ public class OtherPlayerScript : MonoBehaviour
         {
             currentSize = Mathf.Lerp(currentSize, 0, resizeSpeed);
             locationUpdateSphere.localScale = new Vector3(currentSize, currentSize, currentSize);
+        }
+
+        if (serverController.game.started)
+        {
+            if (serverController.playertype != playertype)
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 

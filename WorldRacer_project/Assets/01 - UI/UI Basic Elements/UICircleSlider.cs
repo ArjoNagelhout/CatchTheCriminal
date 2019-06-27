@@ -43,6 +43,7 @@ public class UICircleSlider : MonoBehaviour, IDragHandler, IPointerDownHandler
     public void OnDrag(PointerEventData eventData)
     {
         UpdateValue(eventData.position);
+        
     }
 
     public void OnPointerDown(PointerEventData eventData)

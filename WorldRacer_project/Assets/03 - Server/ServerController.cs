@@ -88,11 +88,13 @@ public class ServerController : MonoBehaviour
     [NonSerialized]
     public Playertype playertype = Playertype.Tobedetermined;
     [NonSerialized]
-    public Coordinate position;
+    public Coordinate position = new Coordinate(0, 0);
     [NonSerialized]
     public Vector2 targetPosition;
     [NonSerialized]
     public float maxTargetDistance;
+    [NonSerialized]
+    public bool isAtStart;
 
     [NonSerialized]
     public float currentTime;
@@ -114,6 +116,7 @@ public class ServerController : MonoBehaviour
     public UIScreenManager uiScreenCriminalWinsCriminal;
     public UIScreenManager uiScreenCopsWinCops;
     public UIScreenManager uiScreenCriminalWinsCops;
+    public UIScreenManager uiScreenStopped;
 
 
     public Game game;
@@ -123,6 +126,8 @@ public class ServerController : MonoBehaviour
     public UnityEvent updateRoomData = new UnityEvent();
     [System.NonSerialized]
     public UnityEvent updateGameData = new UnityEvent();
+    [System.NonSerialized]
+    public UnityEvent getInitialGameData = new UnityEvent();
 
     [Header("Server update timing")]
     public float updateRoomDataDelay;
@@ -350,7 +355,12 @@ public class ServerController : MonoBehaviour
 
             StopUpdatingRoomData();
 
-        } else if (status == "failed")
+        }
+        else if (status == "room_starting")
+        {
+            uiManager.ShowPopup("You can't leave now because the game is starting", uiManager.popupDuration);
+        }
+        else if (status == "failed")
         {
             Debug.Log("Failed to leave game");
 
@@ -474,6 +484,9 @@ public class ServerController : MonoBehaviour
                 Debug.Log("Time before start: " + delay.ToString());
                 uiManager.ShowPopup(string.Format("Game will start in {0} seconds", delay), uiManager.popupDuration);
 
+                uiManager.DismissBottomOverlay();
+                uiManager.DeactivateScreen(uiManager.currentScreen);
+
                 int playertypeInt = (int)incomingJson.GetField("playertype").i;
 
                 if (playertypeInt == 1)
@@ -535,6 +548,8 @@ public class ServerController : MonoBehaviour
 
             JSONObject criminal_target_position = incomingJson.GetField("criminal_target_position");
             game.playfield.criminalTargetPosition = new Coordinate(criminal_target_position.GetField("latitude").f, criminal_target_position.GetField("longitude").f);
+
+            getInitialGameData.Invoke();
         }
         else if (status == "failed")
         {
@@ -550,18 +565,17 @@ public class ServerController : MonoBehaviour
         sendObject.AddField("room_pin", roomPin);
         sendObject.AddField("name", playerName);
         sendObject.AddField("caught", game.caught);
-        
 
-        PlayerScript playerScript = FindObjectOfType<PlayerScript>();
-        if (playerScript != null)
-        {
-            position = playerScript.position;
-        }
+
+        //PlayerScript playerScript = FindObjectOfType<PlayerScript>();
+        //position = playerScript.position;
+        /*}
         else
         {
             position = new Coordinate(0, 0);
-        }
-        
+            uiManager.ShowPopup("Couldn't send coordinates", uiManager.popupDuration);
+        }*/
+
 
         // Send current location of player
         JSONObject positionJson = new JSONObject();
@@ -580,6 +594,8 @@ public class ServerController : MonoBehaviour
     public void StopUpdatingGameData()
     {
         continueUpdatingGameData = false;
+        Destroy(FindObjectOfType<GameController>().game);
+        game = null;
     }
     private void UpdateGameDataCallback(JSONObject incomingJson)
     {
@@ -587,6 +603,12 @@ public class ServerController : MonoBehaviour
 
         if (status == "success")
         {
+
+            if (incomingJson.GetField("stopped").b)
+            {
+                uiManager.NextScreen(uiScreenStopped);
+                StopUpdatingGameData();
+            }
 
             // Check if all players are ready.
             if (incomingJson.GetField("game_started").b)
@@ -598,6 +620,9 @@ public class ServerController : MonoBehaviour
                     game.started = true;
 
                     currentTime = game.time * 60;
+                } else
+                {
+                    currentTime = incomingJson.GetField("time_left").f;
                 }
 
                 
@@ -615,7 +640,6 @@ public class ServerController : MonoBehaviour
                 {
                     uiManager.NextScreen(uiScreenCopsWinCriminal);
                 }
-                Destroy(FindObjectOfType<GameController>().game);
                 StopUpdatingGameData();
             }
 
@@ -631,6 +655,14 @@ public class ServerController : MonoBehaviour
                 JSONObject positionJson = playerJson.GetField("position");
                 Coordinate newCoordinate = new Coordinate(positionJson.GetField("latitude").f, positionJson.GetField("longitude").f);
                 player.position = newCoordinate;
+            }
+
+            if (incomingJson.GetField("ready").b)
+            {
+                isAtStart = true;
+            } else
+            {
+                isAtStart = false;
             }
 
             updateGameData.Invoke();
@@ -656,13 +688,21 @@ public class ServerController : MonoBehaviour
 
     public void RequestStartGame()
     {
-        JSONObject sendObject = new JSONObject();
-        sendObject.AddField("action", "request_start_game");
-        sendObject.AddField("room_pin", roomPin);
-        sendObject.AddField("delay", startGameDelay);
-        sendObject.AddField("name", playerName);
+        if (game.players.Count >= 2)
+        {
 
-        StartCoroutine(SendRequest(sendObject, false, RequestStartGameCallback));
+            JSONObject sendObject = new JSONObject();
+            sendObject.AddField("action", "request_start_game");
+            sendObject.AddField("room_pin", roomPin);
+            sendObject.AddField("delay", startGameDelay);
+            sendObject.AddField("name", playerName);
+
+            StartCoroutine(SendRequest(sendObject, true, RequestStartGameCallback));
+        } else
+        {
+            uiManager.ShowPopup("There are not enough players in this room.", uiManager.popupDuration);
+        }
+
     }
 
 
@@ -687,7 +727,18 @@ public class ServerController : MonoBehaviour
                 playertype = Playertype.Criminal;
             }
 
+            SetPlayerTypes(incomingJson.GetField("playerlist"));
+
+
             StopUpdatingRoomData();
+        }
+        else if (status == "not_enough_players")
+        {
+            uiManager.ShowPopup("There are not enough players in this room.", uiManager.popupDuration);
+        }
+        else if (status == "already_starting")
+        {
+            uiManager.ShowPopup("The game is already starting.", uiManager.popupDuration);
         }
         else if (status == "failed")
         {
@@ -702,6 +753,8 @@ public class ServerController : MonoBehaviour
 
     IEnumerator StartGameAfter(float time)
     {
+        uiManager.DeactivateScreen(uiManager.currentScreen);
+        uiManager.DismissBottomOverlay();
         yield return new WaitForSeconds(time);
 
 
@@ -709,8 +762,34 @@ public class ServerController : MonoBehaviour
         StopUpdatingRoomData();
 
         StartUpdatingGameData();
-
         uiManager.NextScreen(uiScreenGame);
+    }
+
+    public void ExitGame()
+    {
+        JSONObject sendObject = new JSONObject();
+        sendObject.AddField("action", "exit_game");
+        sendObject.AddField("room_pin", roomPin);
+        sendObject.AddField("name", playerName);
+
+        StartCoroutine(SendRequest(sendObject, false, ExitGameCallback));
+    }
+
+    private void ExitGameCallback(JSONObject incomingJson)
+    {
+        string status = incomingJson.GetField("status").str;
+
+        if (status == "success")
+        {
+            uiManager.PreviousScreen(uiScreenHome);
+            StopUpdatingGameData();
+        }
+        else if (status == "failed")
+        {
+            uiManager.ShowPopup("This room doesn't exist anymore", uiManager.popupDuration);
+            uiManager.PreviousScreen(uiScreenHome);
+            StopUpdatingGameData();
+        }
     }
 
 
