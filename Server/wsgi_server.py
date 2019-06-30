@@ -413,7 +413,7 @@ def handle_json(json_data):
 					room.game_started = True
 					room.game_start_timestamp = time.time()
 
-			time_left = room.game_time-(time.time() - room.game_start_timestamp)
+			time_left = (room.game_time*60)-(time.time() - room.game_start_timestamp)
 
 			playerlist = room.playerlist
 			playerlistRaw = []

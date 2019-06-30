@@ -409,6 +409,8 @@ MonoBehaviour:
     type: 3}
   uiScreenCriminalWinsCops: {fileID: 7204217144941093270, guid: d5c617ad38cd24ff58c7590139c736f1,
     type: 3}
+  uiScreenStopped: {fileID: 7204217144941093270, guid: 4eb08b1abc48f4d1fac0794bff2844be,
+    type: 3}
   updateRoomDataDelay: 5
   updateGameDataDelay: 5
   startGameDelay: 6

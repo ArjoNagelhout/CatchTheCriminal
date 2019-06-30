@@ -927,7 +927,7 @@ PrefabInstance:
     - target: {fileID: 7676228066358189875, guid: 6aaaabfee0cb1437098d4d5bd43b4616,
         type: 3}
       propertyPath: m_KeyboardType
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7676228066358189875, guid: 6aaaabfee0cb1437098d4d5bd43b4616,
         type: 3}
